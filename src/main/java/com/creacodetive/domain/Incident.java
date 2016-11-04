@@ -57,20 +57,32 @@ public class Incident {
         this.contexts = builder.contexts;
     }
 
-    private class IncidentBuilder {
-        public String service_key;
-        public EventType event_type;
-        public String incident_key;
-        public String description;
-        public String details;
-        public String client;
-        public String client_url;
-        public List<Context> contexts;
+    public static class IncidentBuilder {
+        private final String service_key;
+        private final EventType event_type;
+        private final String description;
+        private String incident_key;
+        private String details;
+        private String client;
+        private String client_url;
+        private List<Context> contexts;
 
-        public IncidentBuilder(String service_key, EventType event_type, String description) {
+        private IncidentBuilder(String service_key, EventType event_type, String description) {
             this.service_key = service_key;
             this.event_type = event_type;
             this.description = description;
+        }
+
+        public static IncidentBuilder trigger(String service_key, String description) {
+            return new IncidentBuilder(service_key, EventType.TRIGGER, description);
+        }
+
+        public static IncidentBuilder acknowledge(String service_key, String description) {
+            return new IncidentBuilder(service_key, EventType.ACKNOWLEDGE, description);
+        }
+
+        public static IncidentBuilder resolve(String service_key, String description) {
+            return new IncidentBuilder(service_key, EventType.RESOLVE, description);
         }
 
         public IncidentBuilder incident_key(String incident_key) {
