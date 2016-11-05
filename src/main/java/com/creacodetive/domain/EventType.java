@@ -1,5 +1,7 @@
 package com.creacodetive.domain;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * The type of event used for incidents.
  */
@@ -15,6 +17,7 @@ public enum EventType {
         this.eventType = eventType;
     }
 
+    @JsonValue
     public String getEventType() {
         return eventType;
     }

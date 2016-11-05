@@ -4,6 +4,7 @@ import com.creacodetive.domain.EventResult;
 import com.creacodetive.domain.ImageContext;
 import com.creacodetive.domain.Incident;
 import com.creacodetive.domain.LinkContext;
+import com.creacodetive.exceptions.NotifyEventException;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -18,7 +19,7 @@ public class PagerDutyClientTest {
     private PagerDutyClient pagerDutyClient;
 
     @Test
-    public void triggerAlert() {
+    public void triggerAlert() throws NotifyEventException {
         LinkContext linkContext = new LinkContext("http://link-context.com");
         ImageContext imageContext = new ImageContext("http://image-context.com");
         Incident incident = Incident.IncidentBuilder
@@ -29,9 +30,9 @@ public class PagerDutyClientTest {
                 .contexts(Arrays.asList(linkContext, imageContext))
                 .build();
 
-        pagerDutyClient = new PagerDutyClient(API_KEY);
+        pagerDutyClient = PagerDutyClient.create(API_KEY);
         EventResult eventResult = pagerDutyClient.trigger(incident);
-        EventResult expectedEventResult = new EventResult("success", "Event processed", "incidentKey");
+        EventResult expectedEventResult = EventResult.successEvent("success", "Event processed", "incidentKey");
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
 
