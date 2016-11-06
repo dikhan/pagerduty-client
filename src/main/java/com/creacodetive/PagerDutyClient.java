@@ -13,7 +13,7 @@ public class PagerDutyClient {
 
     private final String eventApi;
     private final String apiAccessKey;
-    private final HttpApiServiceImpl httpApiServiceImpl;
+    private final ApiService httpApiServiceImpl;
 
     private PagerDutyClient(PagerDutyClientBuilder pagerDutyClientBuilder) {
         this.apiAccessKey = pagerDutyClientBuilder.getApiAuthToken();
@@ -26,14 +26,14 @@ public class PagerDutyClient {
         Incident incident = Incident.IncidentBuilder
                 .trigger("3125909d661a4591b72fc586b3647ecc", "Incident Test")
                 .client("Creacodetive - PagerDutyClient")
-                .client_url("http://www.creacodetive.com")
+                .clientUrl("http://www.creacodetive.com")
                 .details("This is an incident test to test PagerDutyClient")
                 .build();
         pagerDutyClient.trigger(incident);
     }
 
     /**
-     * Simple helper method to create a PagerDuty client
+     * Helper method to create a PagerDuty client
      * @param apiAccessKey API Access Key which should be  generated via 'Api Access' menu in PagerDuty
      * @return PagerDuty client which allows interaction with the service via API calls
      */
@@ -43,13 +43,13 @@ public class PagerDutyClient {
 
     /**
      * Simple helper method to create a PagerDuty client with specific event api definition.
-     * @param apiAuthToken API Access Key which should be generated via 'Api Access' menu in PagerDuty
+     * @param apiAccessKey API Access Key which should be generated via 'Api Access' menu in PagerDuty
      * @param eventApi Url of the end point to post notifications. This method should only be used for testing
      *                 purposes as event should always be sent to events.pagerduty.com
      * @return PagerDuty client which allows interaction with the service via API calls
      */
-    public static PagerDutyClient create(String apiAuthToken, String eventApi) {
-        return new PagerDutyClientBuilder(apiAuthToken).withEventApi(eventApi).build();
+    public static PagerDutyClient create(String apiAccessKey, String eventApi) {
+        return new PagerDutyClientBuilder(apiAccessKey).withEventApi(eventApi).build();
     }
 
     public EventResult trigger(Incident incident) throws NotifyEventException {
@@ -58,9 +58,23 @@ public class PagerDutyClient {
         return eventResult;
     }
 
+    public EventResult acknowledge(String serviceKey, String incidentKey) throws NotifyEventException {
+        Incident ack = Incident.IncidentBuilder.acknowledge(serviceKey, incidentKey);
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(ack);
+        log.debug("Event result {} for acknowledge incident {}", eventResult, ack);
+        return eventResult;
+    }
+
+    public EventResult resolve(String serviceKey, String incidentKey) throws NotifyEventException {
+        Incident resolve = Incident.IncidentBuilder.resolve(serviceKey, incidentKey);
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(resolve);
+        log.debug("Event result {} for resolve incident {}", eventResult, resolve);
+        return eventResult;
+    }
+
     private static class PagerDutyClientBuilder {
 
-        private static final String EVENT_API = "https://events.pagerduty.com/generic/2010-04-15/create_event.json";
+        private static final String PAGER_DUTY_EVENT_API = "https://events.pagerduty.com/generic/2010-04-15/create_event.json";
 
         private final String apiAuthToken;
         private String eventApi;
@@ -76,7 +90,7 @@ public class PagerDutyClient {
 
         public PagerDutyClient build() {
             if(StringUtils.isBlank(eventApi)) {
-                eventApi = EVENT_API;
+                eventApi = PAGER_DUTY_EVENT_API;
             }
             return new PagerDutyClient(this);
         }
