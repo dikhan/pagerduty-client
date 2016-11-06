@@ -19,9 +19,9 @@ on how to create each incident type as well as how to use PagerDutyClient to per
 - trigger: This will send a new 'trigger' incident to PagerDuty containing the details specified in the IncidentBuilder.
 A helper IncidentBuilder is provided for the sake of simplicity to ease with the creation of trigger incidents. The
 trigger event requires two mandatory parameters:
-    -- service_key (The GUID of one of your "Generic API" services. This is the "Integration Key" listed on a Generic
+-- service_key (The GUID of one of your "Generic API" services. This is the "Integration Key" listed on a Generic
     API's service detail page.)
-    -- description: Text that will appear in the incident's log associated with this event.
+-- description: Text that will appear in the incident's log associated with this event.
 More details can be provided to the incident as previously mentioned by calling the available methods offered by the
 IncidentBuilder.
 ```
@@ -54,11 +54,11 @@ projects whereby a specific logging implementation is already being used (e,g: l
 
 ## Contributing
 
-Fork it!
-Create your feature branch: git checkout -b my-new-feature
-Commit your changes: git commit -am 'Add some feature'
-Push to the branch: git push origin my-new-feature
-Submit a pull request :D
+- Fork it!
+- Create your feature branch: git checkout -b my-new-feature
+- Commit your changes: git commit -am 'Add some feature'
+- Push to the branch: git push origin my-new-feature
+- Submit a pull request :D
 
 ## Authors
 
