@@ -56,4 +56,22 @@ public class HttpApiServiceImpl implements ApiService {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        HttpApiServiceImpl that = (HttpApiServiceImpl) o;
+
+        if (eventApi != null ? !eventApi.equals(that.eventApi) : that.eventApi != null) return false;
+        return !(apiAuthToken != null ? !apiAuthToken.equals(that.apiAuthToken) : that.apiAuthToken != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = eventApi != null ? eventApi.hashCode() : 0;
+        result = 31 * result + (apiAuthToken != null ? apiAuthToken.hashCode() : 0);
+        return result;
+    }
 }

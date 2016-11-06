@@ -18,7 +18,7 @@ public class PagerDutyClient {
     private PagerDutyClient(PagerDutyClientBuilder pagerDutyClientBuilder) {
         this.apiAccessKey = pagerDutyClientBuilder.getApiAuthToken();
         this.eventApi = pagerDutyClientBuilder.getEventApi();
-        this.httpApiServiceImpl = new HttpApiServiceImpl(eventApi, apiAccessKey);
+        this.httpApiServiceImpl = new ApiServiceFactory(eventApi, apiAccessKey).getDefault();
     }
 
     public static void main(String[] args) throws NotifyEventException {

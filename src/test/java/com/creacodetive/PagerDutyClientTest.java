@@ -2,7 +2,6 @@ package com.creacodetive;
 
 import com.creacodetive.domain.EventResult;
 import com.creacodetive.domain.Incident;
-import com.creacodetive.exceptions.NotifyEventException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,9 +9,7 @@ import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 
 import static com.creacodetive.utils.EventHelper.successEvent;
-import static com.creacodetive.utils.IncidentHelper.prepareSampleAcknowledgementIncident;
-import static com.creacodetive.utils.IncidentHelper.prepareSampleResolveIncident;
-import static com.creacodetive.utils.IncidentHelper.prepareSampleTriggerIncident;
+import static com.creacodetive.utils.IncidentHelper.*;
 import static com.creacodetive.utils.MockServerUtils.prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 
