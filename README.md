@@ -63,13 +63,14 @@ projects whereby a specific logging implementation is already being used (e,g: l
 ## Authors
 
 Daniel I. Khan Ramiro - Cisco Systems
+
 See also the list of [contributors](https://github.com/dikhan/pagerduty-client/graphs/contributors) who participated in this project.
 
 ## Acknowledgements:
 
-ApiService calls: http://unirest.io/java.html
-Java objects serialization: https://github.com/FasterXML/jackson
-Testing: http://www.mock-server.com/
+- ApiService calls: http://unirest.io/java.html
+- Java objects serialization: https://github.com/FasterXML/jackson
+- Testing: http://www.mock-server.com/
 
 ## License
 
