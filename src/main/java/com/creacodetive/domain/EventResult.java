@@ -103,4 +103,14 @@ public class EventResult {
         result = 31 * result + (errors != null ? errors.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "EventResult{" +
+                "status='" + status + '\'' +
+                ", message='" + message + '\'' +
+                ", incidentKey='" + incidentKey + '\'' +
+                ", errors='" + errors + '\'' +
+                '}';
+    }
 }

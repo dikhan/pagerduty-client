@@ -3,10 +3,8 @@ package com.creacodetive;
 import com.creacodetive.domain.EventResult;
 import com.creacodetive.domain.Incident;
 import com.creacodetive.exceptions.NotifyEventException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequestWithBody;
@@ -17,41 +15,24 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class RestApiServiceImpl implements ApiService {
+import static com.creacodetive.utils.JsonUtils.getArrayValue;
+import static com.creacodetive.utils.JsonUtils.getPropertyValue;
 
-    private static final Logger log = LoggerFactory.getLogger(RestApiServiceImpl.class);
+public class HttpApiServiceImpl implements ApiService {
+
+    private static final Logger log = LoggerFactory.getLogger(HttpApiServiceImpl.class);
 
     private final String eventApi;
     private final String apiAuthToken;
 
-    public RestApiServiceImpl(String eventApi, String apiAuthToken) {
+    public HttpApiServiceImpl(String eventApi, String apiAuthToken) {
         this.eventApi = eventApi;
         this.apiAuthToken = apiAuthToken;
         initUnirest();
     }
 
     private void initUnirest() {
-        ObjectMapper objectMapper = new ObjectMapper() {
-            private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
-                    = new com.fasterxml.jackson.databind.ObjectMapper();
-
-            public <T> T readValue(String value, Class<T> valueType) {
-                try {
-                    return jacksonObjectMapper.readValue(value, valueType);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            public String writeValue(Object value) {
-                try {
-                    return jacksonObjectMapper.writeValueAsString(value);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-        Unirest.setObjectMapper(objectMapper);
+        Unirest.setObjectMapper(new JacksonObjectMapper());
     }
 
     public EventResult notifyEvent(Incident incident) throws NotifyEventException {
@@ -73,14 +54,6 @@ public class RestApiServiceImpl implements ApiService {
         } catch (UnirestException | IOException e) {
             throw new NotifyEventException(e);
         }
-    }
-
-    private String getPropertyValue(HttpResponse<JsonNode> jsonResponse, String key) {
-        return jsonResponse.getBody().getObject().getString(key);
-    }
-
-    private String getArrayValue(HttpResponse<JsonNode> jsonResponse, String key) {
-        return jsonResponse.getBody().getObject().getJSONArray(key).toString();
     }
 
 }

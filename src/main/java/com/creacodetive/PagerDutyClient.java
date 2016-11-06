@@ -4,23 +4,27 @@ import com.creacodetive.domain.EventResult;
 import com.creacodetive.domain.Incident;
 import com.creacodetive.exceptions.NotifyEventException;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PagerDutyClient {
 
+    private static final Logger log = LoggerFactory.getLogger(PagerDutyClient.class);
+
     private final String eventApi;
     private final String apiAccessKey;
-    private final RestApiServiceImpl restApiServiceImpl;
+    private final HttpApiServiceImpl httpApiServiceImpl;
 
     private PagerDutyClient(PagerDutyClientBuilder pagerDutyClientBuilder) {
         this.apiAccessKey = pagerDutyClientBuilder.getApiAuthToken();
         this.eventApi = pagerDutyClientBuilder.getEventApi();
-        this.restApiServiceImpl = new RestApiServiceImpl(eventApi, apiAccessKey);
+        this.httpApiServiceImpl = new HttpApiServiceImpl(eventApi, apiAccessKey);
     }
 
     public static void main(String[] args) throws NotifyEventException {
         PagerDutyClient pagerDutyClient = create("hb9NvfYMpYFx22ugWv9a");
         Incident incident = Incident.IncidentBuilder
-                .trigger("3125909d661a4591b72fc586b3647ecc_", "Incident Test")
+                .trigger("3125909d661a4591b72fc586b3647ecc", "Incident Test")
                 .client("Creacodetive - PagerDutyClient")
                 .client_url("http://www.creacodetive.com")
                 .details("This is an incident test to test PagerDutyClient")
@@ -49,7 +53,9 @@ public class PagerDutyClient {
     }
 
     public EventResult trigger(Incident incident) throws NotifyEventException {
-        return restApiServiceImpl.notifyEvent(incident);
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
+        log.debug("Event result {}", eventResult);
+        return eventResult;
     }
 
     private static class PagerDutyClientBuilder {
