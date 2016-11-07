@@ -22,9 +22,9 @@ public class PagerDutyClient {
     }
 
     public static void main(String[] args) throws NotifyEventException {
-        PagerDutyClient pagerDutyClient = create("hb9NvfYMpYFx22ugWv9a");
+        PagerDutyClient pagerDutyClient = create("API_AUTH_TOKEN");
         Incident incident = Incident.IncidentBuilder
-                .trigger("3125909d661a4591b72fc586b3647ecc", "Incident Test")
+                .trigger("SERVICE_KEY", "Incident Test")
                 .client("Creacodetive - PagerDutyClient")
                 .clientUrl("http://www.creacodetive.com")
                 .details("This is an incident test to test PagerDutyClient")

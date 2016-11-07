@@ -1,7 +1,12 @@
-# PagerDuty Client
+# PagerDuty Client for Java [![Build Status][travis-image]][travis-url]
+
+![][pagerduty-client-logo]
 
 PagerDuty Client aims to provide a full flexed Java client which is easy to use and integrates seamlessly
 with PagerDuty REST API.
+
+[![License][license-image]][license-url]  |
+[![version][maven-version]][maven-url]
 
 ## Getting started
 
@@ -72,6 +77,16 @@ See also the list of [contributors](https://github.com/dikhan/pagerduty-client/g
 - Java objects serialization: https://github.com/FasterXML/jackson
 - Testing: http://www.mock-server.com/
 
-## License
 
-TBD
+[pagerduty-client-logo]: https://cl.ly/2s1P0L2A0734
+
+
+[license-url]: https://github.com/dikhan/pagerduty-client/master/LICENSE
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
+
+[travis-url]: https://travis-ci.org/cisco/pagerduty-client
+[travis-image]: https://img.shields.io/travis/cisco/pagerduty-client.svg?style=flat
+
+[maven-url]: http://search.maven.org/#browse%
+[maven-version]: https://img.shields.io/maven-central/v/com.cisco.pagerduty-client/pagerduty-client.svg?style=flat
+
