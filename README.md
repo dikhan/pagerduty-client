@@ -81,7 +81,7 @@ See also the list of [contributors](https://github.com/dikhan/pagerduty-client/g
 [pagerduty-client-logo]: https://cl.ly/2s1P0L2A0734
 
 
-[license-url]: https://github.com/dikhan/pagerduty-client/master/LICENSE
+[license-url]: https://github.com/dikhan/pagerduty-client/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
 
 [travis-url]: https://travis-ci.org/cisco/pagerduty-client
