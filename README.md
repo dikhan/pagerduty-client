@@ -1,12 +1,11 @@
-# PagerDuty Client for Java [![Build Status][travis-image]][travis-url]
-
 ![][pagerduty-client-logo]
 
-PagerDuty Client aims to provide a full flexed Java client which is easy to use and integrates seamlessly
+PagerDuty Java Client aims to provide a full flexed Java client which is easy to use and integrates seamlessly
 with PagerDuty REST API.
 
 [![License][license-image]][license-url]  |
-[![version][maven-version]][maven-url]
+[![version][maven-version]][maven-url]    |
+[![Build Status][travis-image]][travis-url]
 
 ## Getting started
 
