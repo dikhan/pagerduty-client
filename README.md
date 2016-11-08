@@ -86,7 +86,7 @@ See also the list of [contributors](https://github.com/dikhan/pagerduty-client/g
 - Testing: http://www.mock-server.com/
 
 
-[pagerduty-client-logo]: https://d17oy1vhnax1f7.cloudfront.net/items/3B3O3f2I2O3T0c3o1V31/PagerDuty_icon_512x512.png?v=af076270
+[pagerduty-client-logo]: https://d17oy1vhnax1f7.cloudfront.net/items/0Q3Q3m1W0F230F2l1P1P/PagerDuty_icon_512x512.png?v=f4f9fdf0
 
 
 [license-url]: https://github.com/dikhan/pagerduty-client/blob/master/LICENSE
