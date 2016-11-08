@@ -10,7 +10,8 @@ Events API:
 [What is the difference between PagerDuty APIs?](https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-)
 
 [![License][license-image]][license-url]  |
-[![version][maven-version]][maven-url]
+[![version][maven-version]][maven-url]    |
+[![Build Status][travis-image]][travis-url]
 
 ## Getting started
 
@@ -85,10 +86,10 @@ See also the list of [contributors](https://github.com/dikhan/pagerduty-client/g
 - Testing: http://www.mock-server.com/
 
 
-[pagerduty-client-logo]: https://cl.ly/2s1P0L2A0734
+[pagerduty-client-logo]: https://d17oy1vhnax1f7.cloudfront.net/items/3B3O3f2I2O3T0c3o1V31/PagerDuty_icon_512x512.png?v=af076270
 
 
-[license-url]: https://github.com/dikhan/pagerduty-client/master/LICENSE
+[license-url]: https://github.com/dikhan/pagerduty-client/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
 
 [travis-url]: https://travis-ci.org/cisco/pagerduty-client
