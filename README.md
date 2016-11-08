@@ -93,7 +93,7 @@ See also the list of [contributors](https://github.com/dikhan/pagerduty-client/g
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
 
 [travis-url]: https://travis-ci.org/cisco/pagerduty-client
-[travis-image]: https://img.shields.io/travis/cisco/pagerduty-client.svg?style=flat
+[travis-image]: https://travis-ci.org/dikhan/pagerduty-client.svg?branch=master
 
 [maven-url]: http://search.maven.org/#browse%
 [maven-version]: https://img.shields.io/maven-central/v/com.cisco.pagerduty-client/pagerduty-client.svg?style=flat
