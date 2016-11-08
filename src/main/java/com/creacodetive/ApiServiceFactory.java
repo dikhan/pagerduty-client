@@ -8,15 +8,13 @@ package com.creacodetive;
 public class ApiServiceFactory {
 
     private final String eventApi;
-    private final String apiAccessKey;
 
-    public ApiServiceFactory(String eventApi, String apiAccessKey) {
+    public ApiServiceFactory(String eventApi) {
         this.eventApi = eventApi;
-        this.apiAccessKey = apiAccessKey;
     }
 
     public ApiService getDefault() {
-        return new HttpApiServiceImpl(eventApi, apiAccessKey);
+        return new HttpApiServiceImpl(eventApi);
     }
 
 }

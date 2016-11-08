@@ -13,7 +13,7 @@ public class IncidentHelper {
         ImageContext imageContext = new ImageContext("http://image-context.com");
         return Incident.IncidentBuilder
                 .trigger(serviceKey, "HealthCheck failed")
-                .client("PagerDutyClientTest")
+                .client("PagerDutyEventsClientTest")
                 .details("Issue details")
                 .clientUrl("http://www.issue-origin.com")
                 .contexts(Arrays.asList(linkContext, imageContext))

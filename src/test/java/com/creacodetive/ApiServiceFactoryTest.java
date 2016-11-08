@@ -9,11 +9,10 @@ public class ApiServiceFactoryTest {
     @Test
     public void apiServiceFactoryProducesRightDefaultApiServiceImpl() {
         String eventApi = "eventApi";
-        String accessKey = "accessKey";
-        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, accessKey);
+        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi);
 
         ApiService apiService = apiServiceFactory.getDefault();
-        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, accessKey);
+        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi);
         assertThat(apiService).isExactlyInstanceOf(HttpApiServiceImpl.class);
         assertThat(apiService).isEqualTo(httpApiService);
     }

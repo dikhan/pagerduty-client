@@ -13,7 +13,7 @@ import static com.creacodetive.utils.IncidentHelper.*;
 import static com.creacodetive.utils.MockServerUtils.prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PagerDutyClientTest {
+public class PagerDutyEventsClientTest {
 
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this);
@@ -25,15 +25,14 @@ public class PagerDutyClientTest {
     private final String EVENT_END_POINT = "/generic/2010-04-15/create_event.json";
     private final String EVENT_API = "http://" + MOCK_PAGER_DUTY_HOSTNAME + ":" + MOCK_PAGER_DUTY_PORT + "/" + EVENT_END_POINT;
 
-    private final String API_KEY = "API_KEY";
     private final String SERVICE_KEY = "SERVICE_KEY";
     private final String INCIDENT_KEY = "INCIDENT_KEY";
 
-    private PagerDutyClient pagerDutyClient;
+    private PagerDutyEventsClient pagerDutyEventsClient;
 
     @Before
     public void setUp() {
-        pagerDutyClient = PagerDutyClient.create(API_KEY, EVENT_API);
+        pagerDutyEventsClient = PagerDutyEventsClient.create(EVENT_API);
     }
 
     @Test
@@ -41,7 +40,7 @@ public class PagerDutyClientTest {
         Incident incident = prepareSampleTriggerIncident(SERVICE_KEY);
         prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident, successEvent(INCIDENT_KEY));
 
-        EventResult eventResult = pagerDutyClient.trigger(incident);
+        EventResult eventResult = pagerDutyEventsClient.trigger(incident);
         EventResult expectedEventResult = successEvent(INCIDENT_KEY);
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
@@ -51,7 +50,7 @@ public class PagerDutyClientTest {
         Incident incident = prepareSampleAcknowledgementIncident(SERVICE_KEY, INCIDENT_KEY);
         prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident, successEvent(INCIDENT_KEY));
 
-        EventResult eventResult = pagerDutyClient.acknowledge(SERVICE_KEY, INCIDENT_KEY);
+        EventResult eventResult = pagerDutyEventsClient.acknowledge(SERVICE_KEY, INCIDENT_KEY);
         EventResult expectedEventResult = successEvent(INCIDENT_KEY);
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
@@ -61,7 +60,7 @@ public class PagerDutyClientTest {
         Incident incident = prepareSampleResolveIncident(SERVICE_KEY, INCIDENT_KEY);
         prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident, successEvent(INCIDENT_KEY));
 
-        EventResult eventResult = pagerDutyClient.resolve(SERVICE_KEY, INCIDENT_KEY);
+        EventResult eventResult = pagerDutyEventsClient.resolve(SERVICE_KEY, INCIDENT_KEY);
         EventResult expectedEventResult = successEvent(INCIDENT_KEY);
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }

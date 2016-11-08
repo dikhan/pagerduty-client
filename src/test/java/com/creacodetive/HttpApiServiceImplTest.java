@@ -1,19 +1,20 @@
 package com.creacodetive;
 
-import com.creacodetive.domain.EventResult;
-import com.creacodetive.domain.Incident;
+import static com.creacodetive.utils.EventHelper.*;
+import static com.creacodetive.utils.IncidentHelper.*;
+import static com.creacodetive.utils.MockServerUtils.*;
+import static org.assertj.core.api.Assertions.*;
+
+import java.net.UnknownHostException;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 
-import java.net.UnknownHostException;
-
-import static com.creacodetive.utils.EventHelper.*;
-import static com.creacodetive.utils.IncidentHelper.prepareSampleTriggerIncident;
-import static com.creacodetive.utils.MockServerUtils.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import com.creacodetive.domain.EventResult;
+import com.creacodetive.domain.Incident;
 
 public class HttpApiServiceImplTest {
 
@@ -31,7 +32,7 @@ public class HttpApiServiceImplTest {
 
     @Before
     public void setUp() throws UnknownHostException {
-        httpApiServiceImpl = new HttpApiServiceImpl(EVENT_API, "VALID_TOKEN");
+        httpApiServiceImpl = new HttpApiServiceImpl(EVENT_API);
     }
 
     @Test

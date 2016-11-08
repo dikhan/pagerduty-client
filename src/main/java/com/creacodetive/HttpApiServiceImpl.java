@@ -23,11 +23,9 @@ public class HttpApiServiceImpl implements ApiService {
     private static final Logger log = LoggerFactory.getLogger(HttpApiServiceImpl.class);
 
     private final String eventApi;
-    private final String apiAuthToken;
 
-    public HttpApiServiceImpl(String eventApi, String apiAuthToken) {
+    public HttpApiServiceImpl(String eventApi) {
         this.eventApi = eventApi;
-        this.apiAuthToken = apiAuthToken;
         initUnirest();
     }
 
@@ -38,8 +36,7 @@ public class HttpApiServiceImpl implements ApiService {
     public EventResult notifyEvent(Incident incident) throws NotifyEventException {
         try {
             HttpRequestWithBody request = Unirest.post(eventApi)
-                    .header("Accept", "application/json")
-                    .header("Authorization", "Token token=" + apiAuthToken);
+                    .header("Accept", "application/json");
             request.body(incident);
             HttpResponse<JsonNode> jsonResponse = request.asJson();
             log.debug(IOUtils.toString(jsonResponse.getRawBody()));
@@ -58,20 +55,19 @@ public class HttpApiServiceImpl implements ApiService {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
-        HttpApiServiceImpl that = (HttpApiServiceImpl) o;
+        HttpApiServiceImpl that = (HttpApiServiceImpl)o;
 
-        if (eventApi != null ? !eventApi.equals(that.eventApi) : that.eventApi != null) return false;
-        return !(apiAuthToken != null ? !apiAuthToken.equals(that.apiAuthToken) : that.apiAuthToken != null);
+        return !(eventApi != null ? !eventApi.equals(that.eventApi) : that.eventApi != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = eventApi != null ? eventApi.hashCode() : 0;
-        result = 31 * result + (apiAuthToken != null ? apiAuthToken.hashCode() : 0);
-        return result;
+        return eventApi != null ? eventApi.hashCode() : 0;
     }
 }
