@@ -76,6 +76,8 @@ adding the following snippet to the pom:
 The library uses SL4J facade for logging purposes. Thus, making it fully flexible for integration with other
 projects whereby a specific logging implementation is already being used (e,g: log4j, logback, etc).
 
+Snapshots of dev versions can be found at [oss.sonatype.org](https://oss.sonatype.org/content/repositories/snapshots/com/github/dikhan/pagerduty-client/)
+
 ## Contributing
 
 - Fork it!
@@ -103,9 +105,9 @@ See also the list of [contributors](https://github.com/dikhan/pagerduty-client/g
 [license-url]: https://github.com/dikhan/pagerduty-client/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
 
-[travis-url]: https://travis-ci.org/cisco/pagerduty-client
+[travis-url]: https://travis-ci.org/dikhan/pagerduty-client
 [travis-image]: https://travis-ci.org/dikhan/pagerduty-client.svg?branch=master
 
-[maven-url]: http://search.maven.org/#browse%
-[maven-version]: https://img.shields.io/maven-central/v/com.cisco.pagerduty-client/pagerduty-client.svg?style=flat
+[maven-url]: http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22pagerduty-client%22
+[maven-version]: https://img.shields.io/maven-central/v/com.github.dikhan/pagerduty-client.svg?style=flat
 

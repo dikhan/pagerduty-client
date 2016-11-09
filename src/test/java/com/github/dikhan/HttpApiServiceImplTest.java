@@ -1,18 +1,20 @@
 package com.github.dikhan;
 
+import static com.github.dikhan.utils.IncidentHelper.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.net.UnknownHostException;
 
-import com.github.dikhan.domain.EventResult;
-import com.github.dikhan.domain.Incident;
-import com.github.dikhan.utils.EventHelper;
-import com.github.dikhan.utils.MockServerUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
+
+import com.github.dikhan.domain.EventResult;
+import com.github.dikhan.domain.Incident;
+import com.github.dikhan.utils.EventHelper;
+import com.github.dikhan.utils.MockServerUtils;
 
 public class HttpApiServiceImplTest {
 

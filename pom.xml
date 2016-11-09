@@ -1,17 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.dikhan</groupId>
     <artifactId>pagerduty-client</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.327-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>pagerduty-client</name>
     <description>Simple Java PagerDuty client with full integration with PagerDuty Events APIs</description>
     <url>https://github.com/dikhan/pagerduty-client</url>
     <inceptionYear>2016</inceptionYear>
-    <organization/>
+    <organization />
 
     <licenses>
         <license>
@@ -33,15 +32,16 @@
         </developer>
     </developers>
 
-    <mailingLists/>
-    <prerequisites/>
-    <modules/>
+    <mailingLists />
+    <prerequisites />
+    <modules />
 
     <scm>
         <connection>scm:git:git@github.com:dikhan/pagerduty-client.git</connection>
         <developerConnection>scm:git:git@github.com:dikhan/pagerduty-client.git</developerConnection>
         <url>git@github.com:dikhan/pagerduty-client.git</url>
-    </scm>
+      <tag>pagerduty-client-1.0.322</tag>
+  </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>
@@ -189,8 +189,8 @@
         </dependency>
     </dependencies>
 
-    <repositories/>
-    <pluginRepositories/>
+    <repositories />
+    <pluginRepositories />
 
     <build>
         <plugins>
@@ -248,10 +248,27 @@
                 </configuration>
             </plugin>
 
+            <!-- The Maven Release Plugin can be used to automate the changes to the Maven POM files, sanity checks, the SCM operations required and the actual deployment execution. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <stagingRepository>https://oss.sonatype.org/content/repositories/snapshots</stagingRepository>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                    <checkModificationExcludes>
+                        <checkModificationExclude>travis-ci/*.sh</checkModificationExclude>
+                    </checkModificationExcludes>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
-    <reporting/>
+    <reporting />
 
     <profiles>
         <profile>
@@ -292,9 +309,36 @@
         </profile>
 
         <profile>
-            <id>sign</id>
+            <id>release</id>
             <build>
                 <plugins>
+                    <!-- javadoc, source -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.4</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.3</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <!-- GPG Signed Components -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -313,6 +357,7 @@
                 </plugins>
             </build>
         </profile>
+
     </profiles>
 
 </project>
