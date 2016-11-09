@@ -16,14 +16,15 @@ env:
 
 install: mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
-script: mvn test -P !build-extras -B
-
-cache:
-  directories:
-    - ~/.m2/repository
-
-after_success:
+script:
+  - mvn test -P !build-extras -B
+  # The below should be placed in the after_success stage but due to the nature on how travis deals with after_script
+  # exit codes different than 0 would not affect the build result which is not the expectation in this case.
   - chmod +x ./travis-ci/before-deploy.sh
   - chmod +x ./travis-ci/deploy.sh
   - ./travis-ci/before-deploy.sh
   - ./travis-ci/deploy.sh
+
+cache:
+  directories:
+    - ~/.m2/repository
