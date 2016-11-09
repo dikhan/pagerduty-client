@@ -23,5 +23,7 @@ cache:
     - ~/.m2/repository
 
 after_success:
+  - chmod +x ./travis-ci/before-deploy.sh
+  - chmod +x ./travis-ci/deploy.sh
   - ./travis-ci/before-deploy.sh
   - ./travis-ci/deploy.sh
