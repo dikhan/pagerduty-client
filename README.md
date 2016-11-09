@@ -60,7 +60,18 @@ Incident incident = Incident.IncidentBuilder.resolve("SERVICE_KEY", "INCIDENT_KE
 pagerDutyEventsClient.resolve(incident);
 ```
 
-## Lib integration:
+## Integration:
+
+[PagerDuty Events Client](http://search.maven.org/#search|ga|1|dikhan) can be easily integrated in other projects by
+adding the following snippet to the pom:
+
+```
+<dependency>
+  <groupId>com.github.dikhan</groupId>
+  <artifactId>pagerduty-client</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 The library uses SL4J facade for logging purposes. Thus, making it fully flexible for integration with other
 projects whereby a specific logging implementation is already being used (e,g: log4j, logback, etc).

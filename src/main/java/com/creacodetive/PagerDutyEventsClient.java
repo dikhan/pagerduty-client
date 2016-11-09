@@ -33,8 +33,7 @@ public class PagerDutyEventsClient {
      * service where the incident will be created.
      * For more information about the difference between PagerDuty APIs (REST API vs Events API) refer
      * to:
-     * {@see <a href="https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-">
-     *     What is the difference between PagerDuty APIs?</a>
+     * @see <a href="https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-">What is the difference between PagerDuty APIs?</a>
      * 
      * @return PagerDuty client which allows interaction with the service via PagerDuty Events API
      */
