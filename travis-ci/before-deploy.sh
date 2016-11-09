@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/bin/bash -e
 
 # This script will be used by Travis CI, thus it's able to decrypt the cert and sign the artifacts appropriately
 
