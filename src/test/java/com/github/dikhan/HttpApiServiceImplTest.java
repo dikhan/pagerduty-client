@@ -1,20 +1,18 @@
-package com.creacodetive;
+package com.github.dikhan;
 
-import static com.creacodetive.utils.EventHelper.*;
-import static com.creacodetive.utils.IncidentHelper.*;
-import static com.creacodetive.utils.MockServerUtils.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.net.UnknownHostException;
 
+import com.github.dikhan.domain.EventResult;
+import com.github.dikhan.domain.Incident;
+import com.github.dikhan.utils.EventHelper;
+import com.github.dikhan.utils.MockServerUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
-
-import com.creacodetive.domain.EventResult;
-import com.creacodetive.domain.Incident;
 
 public class HttpApiServiceImplTest {
 
@@ -39,10 +37,12 @@ public class HttpApiServiceImplTest {
     public void notifyIncidentEventAndSuccessfulResponseFromUpstreamServer() throws Exception {
         String incidentKey = "INCIDENT_KEY";
         Incident incident = prepareSampleTriggerIncident("SERVICE_KEY");
-        prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident, successEvent(incidentKey));
+        MockServerUtils
+                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
+                        EventHelper.successEvent(incidentKey));
 
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
-        EventResult expectedResult = successEvent(incidentKey);
+        EventResult expectedResult = EventHelper.successEvent(incidentKey);
 
         assertThat(eventResult).isEqualTo(expectedResult);
     }
@@ -50,10 +50,11 @@ public class HttpApiServiceImplTest {
     @Test
     public void notifyIncidentEventAndErrorResponseFromUpstreamServer() throws Exception {
         Incident incident = prepareSampleTriggerIncident("SERVICE_KEY");
-        prepareMockServerToReceiveIncidentAndReplyWithWithErrorResponse(mockServerClient, incident, errorEvent());
+        MockServerUtils.prepareMockServerToReceiveIncidentAndReplyWithWithErrorResponse(mockServerClient, incident,
+                EventHelper.errorEvent());
 
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
-        EventResult expectedResult = errorEvent();
+        EventResult expectedResult = EventHelper.errorEvent();
 
         assertThat(eventResult).isEqualTo(expectedResult);
     }
@@ -61,10 +62,10 @@ public class HttpApiServiceImplTest {
     @Test
     public void notifyIncidentEventAnUnexpectedErrorResponseFromUpstreamServer() throws Exception {
         Incident incident = prepareSampleTriggerIncident("SERVICE_KEY");
-        prepareMockServerWithUnexpectedErrorResponse(mockServerClient, incident);
+        MockServerUtils.prepareMockServerWithUnexpectedErrorResponse(mockServerClient, incident);
 
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
-        EventResult expectedResult = unexpectedErrorEvent();
+        EventResult expectedResult = EventHelper.unexpectedErrorEvent();
 
         assertThat(eventResult).isEqualTo(expectedResult);
     }

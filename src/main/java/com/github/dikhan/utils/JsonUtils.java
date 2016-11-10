@@ -1,4 +1,4 @@
-package com.creacodetive.utils;
+package com.github.dikhan.utils;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;

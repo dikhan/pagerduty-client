@@ -1,4 +1,4 @@
-package com.creacodetive.exceptions;
+package com.github.dikhan.exceptions;
 
 public class NotifyEventException extends Exception {
 

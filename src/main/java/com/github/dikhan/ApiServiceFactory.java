@@ -1,4 +1,4 @@
-package com.creacodetive;
+package com.github.dikhan;
 
 /**
  * This class is in charge of producing implementations of ApiService. The default impl can be retrieved

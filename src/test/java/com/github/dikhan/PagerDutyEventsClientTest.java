@@ -1,16 +1,16 @@
-package com.creacodetive;
+package com.github.dikhan;
 
-import com.creacodetive.domain.EventResult;
-import com.creacodetive.domain.Incident;
+import com.github.dikhan.domain.EventResult;
+import com.github.dikhan.domain.Incident;
+import com.github.dikhan.utils.EventHelper;
+import com.github.dikhan.utils.IncidentHelper;
+import com.github.dikhan.utils.MockServerUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 
-import static com.creacodetive.utils.EventHelper.successEvent;
-import static com.creacodetive.utils.IncidentHelper.*;
-import static com.creacodetive.utils.MockServerUtils.prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PagerDutyEventsClientTest {
@@ -37,31 +37,37 @@ public class PagerDutyEventsClientTest {
 
     @Test
     public void triggerAlert() throws Exception {
-        Incident incident = prepareSampleTriggerIncident(SERVICE_KEY);
-        prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident, successEvent(INCIDENT_KEY));
+        Incident incident = IncidentHelper.prepareSampleTriggerIncident(SERVICE_KEY);
+        MockServerUtils
+                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
+                        EventHelper.successEvent(INCIDENT_KEY));
 
         EventResult eventResult = pagerDutyEventsClient.trigger(incident);
-        EventResult expectedEventResult = successEvent(INCIDENT_KEY);
+        EventResult expectedEventResult = EventHelper.successEvent(INCIDENT_KEY);
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
 
     @Test
     public void acknowledgeAlert() throws Exception {
-        Incident incident = prepareSampleAcknowledgementIncident(SERVICE_KEY, INCIDENT_KEY);
-        prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident, successEvent(INCIDENT_KEY));
+        Incident incident = IncidentHelper.prepareSampleAcknowledgementIncident(SERVICE_KEY, INCIDENT_KEY);
+        MockServerUtils
+                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
+                        EventHelper.successEvent(INCIDENT_KEY));
 
         EventResult eventResult = pagerDutyEventsClient.acknowledge(SERVICE_KEY, INCIDENT_KEY);
-        EventResult expectedEventResult = successEvent(INCIDENT_KEY);
+        EventResult expectedEventResult = EventHelper.successEvent(INCIDENT_KEY);
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
 
     @Test
     public void resolveAlert() throws Exception {
-        Incident incident = prepareSampleResolveIncident(SERVICE_KEY, INCIDENT_KEY);
-        prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident, successEvent(INCIDENT_KEY));
+        Incident incident = IncidentHelper.prepareSampleResolveIncident(SERVICE_KEY, INCIDENT_KEY);
+        MockServerUtils
+                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
+                        EventHelper.successEvent(INCIDENT_KEY));
 
         EventResult eventResult = pagerDutyEventsClient.resolve(SERVICE_KEY, INCIDENT_KEY);
-        EventResult expectedEventResult = successEvent(INCIDENT_KEY);
+        EventResult expectedEventResult = EventHelper.successEvent(INCIDENT_KEY);
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
 

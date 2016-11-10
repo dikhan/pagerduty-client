@@ -1,12 +1,11 @@
-package com.creacodetive;
+package com.github.dikhan;
 
+import com.github.dikhan.domain.EventResult;
+import com.github.dikhan.domain.Incident;
+import com.github.dikhan.exceptions.NotifyEventException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.creacodetive.domain.EventResult;
-import com.creacodetive.domain.Incident;
-import com.creacodetive.exceptions.NotifyEventException;
 
 public class PagerDutyEventsClient {
 

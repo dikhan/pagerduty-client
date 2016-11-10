@@ -1,7 +1,7 @@
-package com.creacodetive.utils;
+package com.github.dikhan.utils;
 
-import com.creacodetive.domain.EventResult;
-import com.creacodetive.domain.Incident;
+import com.github.dikhan.domain.EventResult;
+import com.github.dikhan.domain.Incident;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;

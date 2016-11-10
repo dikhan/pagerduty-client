@@ -1,4 +1,4 @@
-package com.creacodetive;
+package com.github.dikhan;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.ObjectMapper;

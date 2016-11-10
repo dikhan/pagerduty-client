@@ -1,8 +1,8 @@
-package com.creacodetive.utils;
+package com.github.dikhan.utils;
 
-import com.creacodetive.domain.ImageContext;
-import com.creacodetive.domain.Incident;
-import com.creacodetive.domain.LinkContext;
+import com.github.dikhan.domain.ImageContext;
+import com.github.dikhan.domain.Incident;
+import com.github.dikhan.domain.LinkContext;
 
 import java.util.Arrays;
 

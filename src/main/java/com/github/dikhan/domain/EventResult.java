@@ -1,4 +1,4 @@
-package com.creacodetive.domain;
+package com.github.dikhan.domain;
 
 public class EventResult {
 

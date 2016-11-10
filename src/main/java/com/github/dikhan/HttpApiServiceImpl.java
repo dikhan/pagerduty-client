@@ -1,8 +1,8 @@
-package com.creacodetive;
+package com.github.dikhan;
 
-import com.creacodetive.domain.EventResult;
-import com.creacodetive.domain.Incident;
-import com.creacodetive.exceptions.NotifyEventException;
+import com.github.dikhan.domain.EventResult;
+import com.github.dikhan.domain.Incident;
+import com.github.dikhan.exceptions.NotifyEventException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import static com.creacodetive.utils.JsonUtils.getArrayValue;
-import static com.creacodetive.utils.JsonUtils.getPropertyValue;
+import static com.github.dikhan.utils.JsonUtils.getArrayValue;
+import static com.github.dikhan.utils.JsonUtils.getPropertyValue;
 
 public class HttpApiServiceImpl implements ApiService {
 

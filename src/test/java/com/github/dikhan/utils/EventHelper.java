@@ -1,6 +1,6 @@
-package com.creacodetive.utils;
+package com.github.dikhan.utils;
 
-import com.creacodetive.domain.EventResult;
+import com.github.dikhan.domain.EventResult;
 import org.apache.http.HttpStatus;
 
 public class EventHelper {

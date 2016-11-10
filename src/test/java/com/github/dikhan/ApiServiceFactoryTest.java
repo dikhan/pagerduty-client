@@ -1,4 +1,4 @@
-package com.creacodetive;
+package com.github.dikhan;
 
 import org.junit.Test;
 
