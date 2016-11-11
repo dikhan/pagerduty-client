@@ -5,13 +5,14 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.dikhan.PagerDutyEventsClient;
 import com.github.dikhan.domain.EventResult;
 import com.github.dikhan.domain.Incident;
 import com.github.dikhan.exceptions.NotifyEventException;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Helper class provided for integration testing purposes
@@ -37,7 +38,14 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
 
     @Override
     public EventResult trigger(Incident incident) throws NotifyEventException {
-        EventResult eventResult = addIncidentAndCreateEventResult(openIncidents, incident);
+        EventResult eventResult;
+        if(StringUtils.isBlank(incident.getIncidentKey())) {
+            String incidentKey = String.valueOf(random.nextLong());
+            incident = updateIncidentWithKey(incident, incidentKey);
+            eventResult = addIncidentAndCreateEventResult(openIncidents, incident);
+        } else {
+            eventResult = addIncidentAndCreateEventResult(openIncidents, incident);
+        }
         log.debug("Event result {}", eventResult);
         return eventResult;
     }
@@ -61,7 +69,7 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
     public Set<Incident> openIncidents() {
         Set<String> incidentKeysResolved = incidentKeysResolved();
         return openIncidents.stream()
-                .filter(incidentKeysResolved::contains)
+                .filter(incident -> !incidentKeysResolved.contains(incident.getIncidentKey()))
                 .collect(Collectors.toSet());
     }
 
@@ -75,14 +83,23 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
 
     private EventResult addIncidentAndCreateEventResult(Set<Incident> incidents, Incident incident) {
         incidents.add(incident);
-        String incidentKey = StringUtils.isBlank(incident.getIncidentKey()) ? String.valueOf(random.nextLong()) : incident.getIncidentKey();
-        return EventResult.successEvent("success-" + incident.getEventType().getEventType(), "Event processed", incidentKey);
+        return EventResult.successEvent("success-" + incident.getEventType().getEventType(), "Event processed", incident.getIncidentKey());
     }
 
     public Set<String> incidentKeysResolved() {
         return resolvedIncidents.stream()
                 .map(Incident::getIncidentKey)
                 .collect(Collectors.toSet());
+    }
+
+    private Incident updateIncidentWithKey(Incident incident, String incidentKey) {
+        return Incident.IncidentBuilder
+                .trigger(incident.getServiceKey(), incident.getDescription())
+                .incidentKey(incidentKey)
+                .client(incident.getClient())
+                .clientUrl(incident.getClientUrl())
+                .details(incident.getDetails())
+                .contexts(incident.getContexts()).build();
     }
 
 }

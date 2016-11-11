@@ -48,6 +48,26 @@ public class Incident {
         return incidentKey;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public String getClient() {
+        return client;
+    }
+
+    public String getClientUrl() {
+        return clientUrl;
+    }
+
+    public List<Context> getContexts() {
+        return contexts;
+    }
+
     public static class IncidentBuilder {
         private final String serviceKey;
         private final EventType eventType;
