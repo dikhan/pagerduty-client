@@ -13,7 +13,7 @@ public class PagerDutyEventsClient {
 
     private final ApiService httpApiServiceImpl;
 
-    private PagerDutyEventsClient(PagerDutyClientBuilder pagerDutyClientBuilder) {
+    protected PagerDutyEventsClient(PagerDutyClientBuilder pagerDutyClientBuilder) {
         String eventApi = pagerDutyClientBuilder.getEventApi();
         this.httpApiServiceImpl = new ApiServiceFactory(eventApi).getDefault();
     }
@@ -72,7 +72,7 @@ public class PagerDutyEventsClient {
         return eventResult;
     }
 
-    private static class PagerDutyClientBuilder {
+    protected static class PagerDutyClientBuilder {
 
         private static final String PAGER_DUTY_EVENT_API = "https://events.pagerduty.com/generic/2010-04-15/create_event.json";
 
