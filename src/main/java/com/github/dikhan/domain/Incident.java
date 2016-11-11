@@ -36,6 +36,18 @@ public class Incident {
         this.contexts = builder.getContexts();
     }
 
+    public String getServiceKey() {
+        return serviceKey;
+    }
+
+    public EventType getEventType() {
+        return eventType;
+    }
+
+    public String getIncidentKey() {
+        return incidentKey;
+    }
+
     public static class IncidentBuilder {
         private final String serviceKey;
         private final EventType eventType;
@@ -106,7 +118,7 @@ public class Incident {
          * saving the new incident.
          * @return IncidentBuilder to be able to keep populating the instance
          */
-        private IncidentBuilder incidentKey(String incidentKey) {
+        public IncidentBuilder incidentKey(String incidentKey) {
             this.incidentKey = incidentKey;
             return this;
         }
@@ -182,5 +194,45 @@ public class Incident {
         public List<Context> getContexts() {
             return contexts;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Incident incident = (Incident)o;
+
+        if (serviceKey != null ? !serviceKey.equals(incident.serviceKey) : incident.serviceKey != null)
+            return false;
+        if (eventType != incident.eventType)
+            return false;
+        if (incidentKey != null ? !incidentKey.equals(incident.incidentKey) : incident.incidentKey != null)
+            return false;
+        if (description != null ? !description.equals(incident.description) : incident.description != null)
+            return false;
+        if (details != null ? !details.equals(incident.details) : incident.details != null)
+            return false;
+        if (client != null ? !client.equals(incident.client) : incident.client != null)
+            return false;
+        if (clientUrl != null ? !clientUrl.equals(incident.clientUrl) : incident.clientUrl != null)
+            return false;
+        return !(contexts != null ? !contexts.equals(incident.contexts) : incident.contexts != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = serviceKey != null ? serviceKey.hashCode() : 0;
+        result = 31 * result + (eventType != null ? eventType.hashCode() : 0);
+        result = 31 * result + (incidentKey != null ? incidentKey.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (details != null ? details.hashCode() : 0);
+        result = 31 * result + (client != null ? client.hashCode() : 0);
+        result = 31 * result + (clientUrl != null ? clientUrl.hashCode() : 0);
+        result = 31 * result + (contexts != null ? contexts.hashCode() : 0);
+        return result;
     }
 }
