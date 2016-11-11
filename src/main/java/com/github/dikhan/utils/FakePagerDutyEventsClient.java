@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import com.github.dikhan.PagerDutyEventsClient;
 import com.github.dikhan.domain.EventResult;
-import com.github.dikhan.domain.EventType;
 import com.github.dikhan.domain.Incident;
 import com.github.dikhan.exceptions.NotifyEventException;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +22,9 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
 
     private static final Logger log = LoggerFactory.getLogger(FakePagerDutyEventsClient.class);
 
-    private final Set<Incident> incidents = new HashSet<>();
+    private final Set<Incident> openIncidents = new HashSet<>();
+    private final Set<Incident> resolvedIncidents = new HashSet<>();
+    private final Set<Incident> acknowledgedIncidents = new HashSet<>();
     private final Random random = new Random();
 
     private FakePagerDutyEventsClient(PagerDutyClientBuilder pagerDutyClientBuilder) {
@@ -36,7 +37,7 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
 
     @Override
     public EventResult trigger(Incident incident) throws NotifyEventException {
-        EventResult eventResult = addIncidentAndCreateEventResult(incident);
+        EventResult eventResult = addIncidentAndCreateEventResult(openIncidents, incident);
         log.debug("Event result {}", eventResult);
         return eventResult;
     }
@@ -44,7 +45,7 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
     @Override
     public EventResult acknowledge(String serviceKey, String incidentKey) throws NotifyEventException {
         Incident ack = Incident.IncidentBuilder.acknowledge(serviceKey, incidentKey);
-        EventResult eventResult = addIncidentAndCreateEventResult(ack);
+        EventResult eventResult = addIncidentAndCreateEventResult(acknowledgedIncidents, ack);
         log.debug("Event result {} for acknowledge incident {}", eventResult, ack);
         return eventResult;
     }
@@ -52,33 +53,36 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
     @Override
     public EventResult resolve(String serviceKey, String incidentKey) throws NotifyEventException {
         Incident resolve = Incident.IncidentBuilder.resolve(serviceKey, incidentKey);
-        EventResult eventResult = addIncidentAndCreateEventResult(resolve);
+        EventResult eventResult = addIncidentAndCreateEventResult(resolvedIncidents, resolve);
         log.debug("Event result {} for resolve incident {}", eventResult, resolve);
         return eventResult;
     }
 
     public Set<Incident> openIncidents() {
-        return incidents.stream()
-                .filter(incident -> incident.getEventType() == EventType.TRIGGER)
+        Set<String> incidentKeysResolved = incidentKeysResolved();
+        return openIncidents.stream()
+                .filter(incidentKeysResolved::contains)
                 .collect(Collectors.toSet());
     }
 
     public Set<Incident> resolvedIncidents() {
-        return incidents.stream()
-                .filter(incident -> incident.getEventType() == EventType.RESOLVE)
-                .collect(Collectors.toSet());
+        return resolvedIncidents;
     }
 
     public Set<Incident> acknowledgedIncidents() {
-        return incidents.stream()
-                .filter(incident -> incident.getEventType() == EventType.ACKNOWLEDGE)
-                .collect(Collectors.toSet());
+        return acknowledgedIncidents;
     }
 
-    private EventResult addIncidentAndCreateEventResult(Incident incident) {
+    private EventResult addIncidentAndCreateEventResult(Set<Incident> incidents, Incident incident) {
         incidents.add(incident);
         String incidentKey = StringUtils.isBlank(incident.getIncidentKey()) ? String.valueOf(random.nextLong()) : incident.getIncidentKey();
         return EventResult.successEvent("success-" + incident.getEventType().getEventType(), "Event processed", incidentKey);
+    }
+
+    public Set<String> incidentKeysResolved() {
+        return resolvedIncidents.stream()
+                .map(Incident::getIncidentKey)
+                .collect(Collectors.toSet());
     }
 
 }

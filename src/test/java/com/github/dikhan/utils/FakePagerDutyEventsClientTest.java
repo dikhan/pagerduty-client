@@ -2,6 +2,7 @@ package com.github.dikhan.utils;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.github.dikhan.domain.EventResult;
 import org.junit.Test;
 
 import com.github.dikhan.domain.Incident;
@@ -39,6 +40,17 @@ public class FakePagerDutyEventsClientTest {
         Incident incident = Incident.IncidentBuilder.resolve("ServiceKey", "IncidentKey");
         fakePagerDutyEventsClient.resolve(incident.getServiceKey(), incident.getIncidentKey());
         assertThat(fakePagerDutyEventsClient.resolvedIncidents()).containsExactly(incident);
+    }
+
+    @Test
+    public void triggerAndResolveIncident() throws NotifyEventException {
+        Incident incident = Incident.IncidentBuilder.trigger("ServiceKey", "Some issue description").build();
+        EventResult eventResult = fakePagerDutyEventsClient.trigger(incident);
+
+        incident = Incident.IncidentBuilder.resolve("ServiceKey", eventResult.getIncidentKey());
+        fakePagerDutyEventsClient.resolve(incident.getServiceKey(), incident.getIncidentKey());
+        assertThat(fakePagerDutyEventsClient.resolvedIncidents()).containsExactly(incident);
+        assertThat(fakePagerDutyEventsClient.openIncidents()).isEmpty();
     }
 
 }
