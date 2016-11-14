@@ -69,7 +69,7 @@ adding the following snippet to the pom:
 <dependency>
   <groupId>com.github.dikhan</groupId>
   <artifactId>pagerduty-client</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
