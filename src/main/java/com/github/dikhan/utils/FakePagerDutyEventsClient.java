@@ -5,6 +5,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.dikhan.domain.AcknowledgeIncident;
+import com.github.dikhan.domain.ResolveIncident;
+import com.github.dikhan.domain.TriggerIncident;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +26,9 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
 
     private static final Logger log = LoggerFactory.getLogger(FakePagerDutyEventsClient.class);
 
-    private final Set<Incident> openIncidents = new HashSet<>();
-    private final Set<Incident> resolvedIncidents = new HashSet<>();
-    private final Set<Incident> acknowledgedIncidents = new HashSet<>();
+    private final Set<TriggerIncident> openIncidents = new HashSet<>();
+    private final Set<ResolveIncident> resolvedIncidents = new HashSet<>();
+    private final Set<AcknowledgeIncident> acknowledgedIncidents = new HashSet<>();
     private final Random random = new Random();
 
     private FakePagerDutyEventsClient(PagerDutyClientBuilder pagerDutyClientBuilder) {
@@ -37,52 +40,58 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
     }
 
     @Override
-    public EventResult trigger(Incident incident) throws NotifyEventException {
+    public EventResult trigger(TriggerIncident incident) throws NotifyEventException {
         EventResult eventResult;
         if(StringUtils.isBlank(incident.getIncidentKey())) {
             String incidentKey = String.valueOf(random.nextLong());
-            incident = updateIncidentWithKey(incident, incidentKey);
-            eventResult = addIncidentAndCreateEventResult(openIncidents, incident);
+            incident = updateTriggerIncidentWithKey(incident, incidentKey);
+            eventResult = createEventResult(incident);
         } else {
-            eventResult = addIncidentAndCreateEventResult(openIncidents, incident);
+            eventResult = createEventResult(incident);
         }
+        openIncidents.add(incident);
         log.debug("Event result {}", eventResult);
         return eventResult;
     }
 
     @Override
-    public EventResult acknowledge(String serviceKey, String incidentKey) throws NotifyEventException {
-        Incident ack = Incident.IncidentBuilder.acknowledge(serviceKey, incidentKey);
-        EventResult eventResult = addIncidentAndCreateEventResult(acknowledgedIncidents, ack);
+    public EventResult acknowledge(AcknowledgeIncident ack) throws NotifyEventException {
+        if(StringUtils.isBlank(ack.getServiceKey()) || StringUtils.isBlank(ack.getIncidentKey())) {
+            throw new NotifyEventException("serviceKey and incidentKey are required parameters to be able to acknowledge an incident");
+        }
+        acknowledgedIncidents.add(ack);
+        EventResult eventResult = createEventResult(ack);
         log.debug("Event result {} for acknowledge incident {}", eventResult, ack);
         return eventResult;
     }
 
     @Override
-    public EventResult resolve(String serviceKey, String incidentKey) throws NotifyEventException {
-        Incident resolve = Incident.IncidentBuilder.resolve(serviceKey, incidentKey);
-        EventResult eventResult = addIncidentAndCreateEventResult(resolvedIncidents, resolve);
+    public EventResult resolve(ResolveIncident resolve) throws NotifyEventException {
+        if(StringUtils.isBlank(resolve.getServiceKey()) || StringUtils.isBlank(resolve.getIncidentKey())) {
+            throw new NotifyEventException("serviceKey and incidentKey are required parameters to be able to resolve an incident");
+        }
+        resolvedIncidents.add(resolve);
+        EventResult eventResult = createEventResult(resolve);
         log.debug("Event result {} for resolve incident {}", eventResult, resolve);
         return eventResult;
     }
 
-    public Set<Incident> openIncidents() {
+    public Set<TriggerIncident> openIncidents() {
         Set<String> incidentKeysResolved = incidentKeysResolved();
         return openIncidents.stream()
                 .filter(incident -> !incidentKeysResolved.contains(incident.getIncidentKey()))
                 .collect(Collectors.toSet());
     }
 
-    public Set<Incident> resolvedIncidents() {
+    public Set<ResolveIncident> resolvedIncidents() {
         return resolvedIncidents;
     }
 
-    public Set<Incident> acknowledgedIncidents() {
+    public Set<AcknowledgeIncident> acknowledgedIncidents() {
         return acknowledgedIncidents;
     }
 
-    private EventResult addIncidentAndCreateEventResult(Set<Incident> incidents, Incident incident) {
-        incidents.add(incident);
+    private EventResult createEventResult(Incident incident) {
         return EventResult.successEvent("success-" + incident.getEventType().getEventType(), "Event processed", incident.getIncidentKey());
     }
 
@@ -92,9 +101,9 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
                 .collect(Collectors.toSet());
     }
 
-    private Incident updateIncidentWithKey(Incident incident, String incidentKey) {
-        return Incident.IncidentBuilder
-                .trigger(incident.getServiceKey(), incident.getDescription())
+    private TriggerIncident updateTriggerIncidentWithKey(TriggerIncident incident, String incidentKey) {
+        return TriggerIncident.TriggerIncidentBuilder
+                .create(incident.getServiceKey(), incident.getDescription())
                 .incidentKey(incidentKey)
                 .client(incident.getClient())
                 .clientUrl(incident.getClientUrl())

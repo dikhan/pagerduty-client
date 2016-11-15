@@ -2,7 +2,7 @@
 
 ![][pagerduty-client-logo]
 
-PagerDuty Events Client aims to provide a full flexed Java client which is easy to use and integrates seamlessly
+PagerDuty Events Client aims to provide a full-fledged Java client which is easy to use and integrates seamlessly
 with PagerDuty Events API. Note that the library does not integrate with PagerDuty REST Api - it is only meant
 for PagerDuty Events API. Please refer to the following link to see the differences between PagerDuty REST API and
 Events API:
@@ -38,26 +38,33 @@ trigger event requires two mandatory parameters:
 More details can be provided to the incident as previously mentioned by calling the available methods offered by the
 IncidentBuilder.
 ```
-Incident incident = Incident.IncidentBuilder
-        .trigger("SERVICE_KEY", "INCIDENT DESCRIPTION")
-        .client("Creacodetive - PagerDutyClient")
+TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
+        .create("SERVICE_KEY", "Incident Test")
+        .client("Creacodetive - PagerDutyEventsClient")
         .clientUrl("http://www.creacodetive.com")
-        .details("This is an incident test to test PagerDutyClient")
+        .details("This is an incident test to test PagerDutyEventsClient")
+        .contexts(Arrays.asList(new ImageContext("http://src.com"), new LinkContext("http://href.com")))
         .build();
 pagerDutyEventsClient.trigger(incident);
 ```
 
 - **Acknowledge**: This will send a new acknowledge incident to PagerDuty based upon the 'serviceKey' and 'incidentKey'
-provided.
+provided. Please note that PagerDuty does not support neither description nor details to be added to the acknowledge event.
 ```
-Incident incident = Incident.IncidentBuilder.acknowledge("SERVICE_KEY", "INCIDENT_KEY");
-pagerDutyEventsClient.acknowledge(incident);
+AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder
+        .create("SERVICE_KEY", "INCIDENT_KEY")
+        .build();
+pagerDutyEventsClient.acknowledge(ack);
 ```
 
 - **Resolve**: This will send a new resolve incident to PagerDuty based upon the 'service_key' and 'incident_key' provided.
+More details about the resolution can be provided by populating the details and description fields.
 ```
-Incident incident = Incident.IncidentBuilder.resolve("SERVICE_KEY", "INCIDENT_KEY");
-pagerDutyEventsClient.resolve(incident);
+ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder
+        .create("SERVICE_KEY", "INCIDENT_KEY")
+        .details("Resolving - This is an incident test to test PagerDutyEventsClient")
+        .description("Resolving description").build();
+pagerDutyEventsClient.resolve(resolve);
 ```
 
 ## Integration:
@@ -69,7 +76,7 @@ adding the following snippet to the pom:
 <dependency>
   <groupId>com.github.dikhan</groupId>
   <artifactId>pagerduty-client</artifactId>
-  <version>1.0.2</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
