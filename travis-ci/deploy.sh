@@ -20,6 +20,6 @@ then
     mvn release:perform --settings travis-ci/settings.xml  || { echo $0: mvn failed; exit 1; }
 else if [ "$TRAVIS_PULL_REQUEST" == "true" ];
     then
-        mvn --batch-mode release:clean release:prepare release:stage  || { echo $0: mvn failed; exit 1; }
+        mvn --batch-mode release:clean release:prepare release:stage -DcheckModificationExcludeList="**/*.java,**/*.md,**/pom.xml" || { echo $0: mvn failed; exit 1; }
     fi
 fi
