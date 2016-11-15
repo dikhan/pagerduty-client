@@ -261,9 +261,9 @@
                     <goals>deploy</goals>
                     <checkModificationExcludes>
                         <checkModificationExclude>travis-ci/*.sh</checkModificationExclude>
-                        <checkModificationExclude>**/*.java</checkModificationExclude>
-                        <checkModificationExclude>**/*.md</checkModificationExclude>
-                        <checkModificationExclude>**/pom.xml</checkModificationExclude>
+                        <!--<checkModificationExclude>**/*.java</checkModificationExclude>-->
+                        <!--<checkModificationExclude>**/*.md</checkModificationExclude>-->
+                        <!--<checkModificationExclude>**/pom.xml</checkModificationExclude>-->
                     </checkModificationExcludes>
                 </configuration>
             </plugin>
