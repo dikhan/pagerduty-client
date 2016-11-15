@@ -1,11 +1,18 @@
 package com.github.dikhan;
 
-import com.github.dikhan.domain.EventResult;
-import com.github.dikhan.domain.Incident;
-import com.github.dikhan.exceptions.NotifyEventException;
+import java.util.Arrays;
+
+import com.github.dikhan.domain.ImageContext;
+import com.github.dikhan.domain.LinkContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.dikhan.domain.AcknowledgeIncident;
+import com.github.dikhan.domain.EventResult;
+import com.github.dikhan.domain.ResolveIncident;
+import com.github.dikhan.domain.TriggerIncident;
+import com.github.dikhan.exceptions.NotifyEventException;
 
 public class PagerDutyEventsClient {
 
@@ -20,10 +27,25 @@ public class PagerDutyEventsClient {
 
     public static void main(String[] args) throws NotifyEventException {
         PagerDutyEventsClient pagerDutyEventsClient = create();
-        Incident incident = Incident.IncidentBuilder.trigger("SERVICE_KEY", "Incident Test")
-                .client("Creacodetive - PagerDutyEventsClient").clientUrl("http://www.creacodetive.com")
-                .details("This is an incident test to test PagerDutyEventsClient").build();
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
+                .create("SERVICE_KEY", "Incident Test")
+                .client("Creacodetive - PagerDutyEventsClient")
+                .clientUrl("http://www.creacodetive.com")
+                .details("This is an incident test to test PagerDutyEventsClient")
+                .contexts(Arrays.asList(new ImageContext("http://src.com"), new LinkContext("http://href.com")))
+                .build();
         pagerDutyEventsClient.trigger(incident);
+
+        AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder
+                .create("SERVICE_KEY", "INCIDENT_KEY")
+                .build();
+        pagerDutyEventsClient.acknowledge(ack);
+
+        ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder
+                .create("SERVICE_KEY", "INCIDENT_KEY")
+                .details("Resolving - This is an incident test to test PagerDutyEventsClient")
+                .description("Resolving description").build();
+        pagerDutyEventsClient.resolve(resolve);
     }
 
     /**
@@ -52,21 +74,19 @@ public class PagerDutyEventsClient {
         return new PagerDutyClientBuilder().withEventApi(eventApi).build();
     }
 
-    public EventResult trigger(Incident incident) throws NotifyEventException {
+    public EventResult trigger(TriggerIncident incident) throws NotifyEventException {
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
         log.debug("Event result {}", eventResult);
         return eventResult;
     }
 
-    public EventResult acknowledge(String serviceKey, String incidentKey) throws NotifyEventException {
-        Incident ack = Incident.IncidentBuilder.acknowledge(serviceKey, incidentKey);
+    public EventResult acknowledge(AcknowledgeIncident ack) throws NotifyEventException {
         EventResult eventResult = httpApiServiceImpl.notifyEvent(ack);
         log.debug("Event result {} for acknowledge incident {}", eventResult, ack);
         return eventResult;
     }
 
-    public EventResult resolve(String serviceKey, String incidentKey) throws NotifyEventException {
-        Incident resolve = Incident.IncidentBuilder.resolve(serviceKey, incidentKey);
+    public EventResult resolve(ResolveIncident resolve) throws NotifyEventException {
         EventResult eventResult = httpApiServiceImpl.notifyEvent(resolve);
         log.debug("Event result {} for resolve incident {}", eventResult, resolve);
         return eventResult;

@@ -2,10 +2,12 @@ package com.github.dikhan.utils;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.github.dikhan.domain.EventResult;
 import org.junit.Test;
 
-import com.github.dikhan.domain.Incident;
+import com.github.dikhan.domain.AcknowledgeIncident;
+import com.github.dikhan.domain.EventResult;
+import com.github.dikhan.domain.ResolveIncident;
+import com.github.dikhan.domain.TriggerIncident;
 import com.github.dikhan.exceptions.NotifyEventException;
 
 public class FakePagerDutyEventsClientTest {
@@ -14,15 +16,15 @@ public class FakePagerDutyEventsClientTest {
 
     @Test
     public void triggerIncident() throws NotifyEventException {
-        Incident incident = Incident.IncidentBuilder.trigger("ServiceKey", "Some issue description").build();
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.create("ServiceKey", "Some issue description").build();
         fakePagerDutyEventsClient.trigger(incident);
         assertThat(fakePagerDutyEventsClient.openIncidents()).hasSize(1);
     }
 
     @Test
     public void triggerIncidentWithIncidentKey() throws NotifyEventException {
-        Incident incident = Incident.IncidentBuilder
-                .trigger("ServiceKey", "Some issue description")
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
+                .create("ServiceKey", "Some issue description")
                 .incidentKey("IncidentKey").build();
         fakePagerDutyEventsClient.trigger(incident);
         assertThat(fakePagerDutyEventsClient.openIncidents()).containsExactly(incident);
@@ -30,26 +32,26 @@ public class FakePagerDutyEventsClientTest {
 
     @Test
     public void acknowledgeIncident() throws NotifyEventException {
-        Incident incident = Incident.IncidentBuilder.acknowledge("ServiceKey", "IncidentKey");
-        fakePagerDutyEventsClient.acknowledge(incident.getServiceKey(), incident.getIncidentKey());
-        assertThat(fakePagerDutyEventsClient.acknowledgedIncidents()).containsExactly(incident);
+        AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder.create("ServiceKey", "IncidentKey").build();
+        fakePagerDutyEventsClient.acknowledge(ack);
+        assertThat(fakePagerDutyEventsClient.acknowledgedIncidents()).containsExactly(ack);
     }
 
     @Test
     public void resolveIncident() throws NotifyEventException {
-        Incident incident = Incident.IncidentBuilder.resolve("ServiceKey", "IncidentKey");
-        fakePagerDutyEventsClient.resolve(incident.getServiceKey(), incident.getIncidentKey());
-        assertThat(fakePagerDutyEventsClient.resolvedIncidents()).containsExactly(incident);
+        ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder.create("ServiceKey", "IncidentKey").build();
+        fakePagerDutyEventsClient.resolve(resolve);
+        assertThat(fakePagerDutyEventsClient.resolvedIncidents()).containsExactly(resolve);
     }
 
     @Test
     public void triggerAndResolveIncident() throws NotifyEventException {
-        Incident incident = Incident.IncidentBuilder.trigger("ServiceKey", "Some issue description").build();
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.create("ServiceKey", "Some issue description").build();
         EventResult eventResult = fakePagerDutyEventsClient.trigger(incident);
 
-        incident = Incident.IncidentBuilder.resolve("ServiceKey", eventResult.getIncidentKey());
-        fakePagerDutyEventsClient.resolve(incident.getServiceKey(), incident.getIncidentKey());
-        assertThat(fakePagerDutyEventsClient.resolvedIncidents()).containsExactly(incident);
+        ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder.create("ServiceKey", eventResult.getIncidentKey()).build();
+        fakePagerDutyEventsClient.resolve(resolve);
+        assertThat(fakePagerDutyEventsClient.resolvedIncidents()).containsExactly(resolve);
         assertThat(fakePagerDutyEventsClient.openIncidents()).isEmpty();
     }
 

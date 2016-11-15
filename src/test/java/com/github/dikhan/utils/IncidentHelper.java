@@ -1,18 +1,20 @@
 package com.github.dikhan.utils;
 
-import com.github.dikhan.domain.ImageContext;
-import com.github.dikhan.domain.Incident;
-import com.github.dikhan.domain.LinkContext;
-
 import java.util.Arrays;
+
+import com.github.dikhan.domain.AcknowledgeIncident;
+import com.github.dikhan.domain.ImageContext;
+import com.github.dikhan.domain.LinkContext;
+import com.github.dikhan.domain.ResolveIncident;
+import com.github.dikhan.domain.TriggerIncident;
 
 public class IncidentHelper {
 
-    public static Incident prepareSampleTriggerIncident(String serviceKey) {
+    public static TriggerIncident prepareSampleTriggerIncident(String serviceKey) {
         LinkContext linkContext = new LinkContext("http://link-context.com");
         ImageContext imageContext = new ImageContext("http://image-context.com");
-        return Incident.IncidentBuilder
-                .trigger(serviceKey, "HealthCheck failed")
+        return TriggerIncident.TriggerIncidentBuilder
+                .create(serviceKey, "HealthCheck failed")
                 .client("PagerDutyEventsClientTest")
                 .details("Issue details")
                 .clientUrl("http://www.issue-origin.com")
@@ -20,12 +22,12 @@ public class IncidentHelper {
                 .build();
     }
 
-    public static Incident prepareSampleAcknowledgementIncident(String serviceKey, String incidentKey) {
-        return Incident.IncidentBuilder.acknowledge(serviceKey, incidentKey);
+    public static AcknowledgeIncident prepareSampleAcknowledgementIncident(String serviceKey, String incidentKey) {
+        return AcknowledgeIncident.AcknowledgeIncidentBuilder.create(serviceKey, incidentKey).build();
     }
 
-    public static Incident prepareSampleResolveIncident(String serviceKey, String incidentKey) {
-        return Incident.IncidentBuilder.resolve(serviceKey, incidentKey);
+    public static ResolveIncident prepareSampleResolveIncident(String serviceKey, String incidentKey) {
+        return ResolveIncident.ResolveIncidentBuilder.create(serviceKey, incidentKey).build();
     }
 
 }
