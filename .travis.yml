@@ -25,6 +25,11 @@ branches:
   except:
   - /^(?i:pagerduty-client)-.*$/
 
+# safelist
+branches:
+  only:
+  - master
+
 install:
   - git remote set-head origin $TRAVIS_BRANCH
   - git show-ref --head
