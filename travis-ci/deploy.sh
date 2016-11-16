@@ -14,12 +14,10 @@ ssh-add -l
 git config --global user.email $GITHUB_EMAIL
 git config --global user.name $GITHUB_USERNAME
 
-if [ "$TRAVIS_BRANCH" = "master" ];
-then
+if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST_BRANCH" == "" ];then
     mvn --batch-mode release:clean release:prepare  || { echo $0: mvn failed; exit 1; }
     mvn release:perform --settings travis-ci/settings.xml  || { echo $0: mvn failed; exit 1; }
-else if [ "$TRAVIS_PULL_REQUEST" == "true" ];
-    then
-        mvn --batch-mode release:clean release:prepare release:stage || { echo $0: mvn failed; exit 1; }
+else if [ "$TRAVIS_PULL_REQUEST" != "" ] && [ "$TRAVIS_EVENT_TYPE" == "pull_request" ];then
+        mvn --batch-mode release:clean release:prepare release:stage --settings travis-ci/settings.xml || { echo $0: mvn failed; exit 1; }
     fi
 fi

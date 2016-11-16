@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" == 'false' ]; then
+if [ "$TRAVIS_BRANCH" == "master" ] || [ "$TRAVIS_EVENT_TYPE" == "pull_request" ];then
     # Clean up gpg content
     shred --remove travis-ci/signingkey.asc
 #    gpg --yes --batch --delete-key $GPG_KEY_NAME
