@@ -20,37 +20,23 @@ env:
   - # PEM_ENCRYPTION_PASSWORD
   - secure: "fJOACH7u3KIN+ADdbXbyaucFePAH1S+G0/CZEN6GYBNyGgaspJFBk+JPyuBzSqdA6/Y5i1mFkT2tOVYZVJnYEXCuwpJwcmjXLhgze/Ie8QPHo3Io26TlBFvPoQ4yT3Y7yiIXb5diDz4dm+p9ELwZaX9ctZmKOrtF85/KPWzMTRvTrnk5fwJS5qcK+IY2xIEGGBWqgDR1Tdkzye8hv0E/h4vZEuDsV18dEMJWpOCGxHUwV3OH9tS7OXgqBgJvNCixQ3547U8/dGfKmMYPPkddCdWsBHm1FhI5Tslde1RD/0rQ6uhcCk6vXahVEQaTonNEhtt3kVCaT9x76YRONTMqdXIY13bSbvyFAfMDt0cNsd6NkCY3dg8uoXwPDDR1u5A4hu7yJltxhokR5ovU6ooscgyJVRDzmHsiNT4whvjoZv76GX3O2uxD2rpZB/4ccrt4xT8EXN3bu+yoQPWPThDUoaDpCc1a6M5Rhjy08rrWLHbtcuYv5mFL2PYAZbUiw2sk5fuT5XSthv6bO3pXyZY5Lx8+w7kHLA9c4HWUpxS5YKDm5mA4mxEBhPjKDRrQ/daxkjXiDE0IgqknICDWfeaZ/3B6EfGBz0xDwjliGTwhZRX1brX3N8TnoD33RS2fI+rwO+XY7knM4eweNQBoMxVUnW2QfRiO7r0YLJJIwjAaQPo="
 
-# blocklist
-branches:
-  except:
-  - /^(?i:pagerduty-client)-.*$/
-
 # safelist
 branches:
   only:
   - master
 
 install:
-  - git remote set-head origin $TRAVIS_BRANCH
-  - git show-ref --head
-  - git symbolic-ref HEAD refs/heads/$TRAVIS_BRANCH
-  - git symbolic-ref HEAD
   - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - export TRAVIS_COMMIT_DESCRIPTION=`git log -n 1`
 
 script:
   # The below should be placed in the after_success stage but due to the nature on how travis deals with after_script
   # exit codes different than 0 would not affect the build result which is not the expectation in this case.
-  - if [[ "$TRAVIS_COMMIT_DESCRIPTION" != *"maven-release-plugin"* ]];
-    then
-      mvn test -P !build-extras -B  || travis_terminate 1;
-      chmod +x ./travis-ci/before-deploy.sh ./travis-ci/deploy.sh ./travis-ci/cleanup.sh || travis_terminate 1;
-      ./travis-ci/before-deploy.sh;
-      ./travis-ci/deploy.sh;
-      ./travis-ci/cleanup.sh;
-    else
-      echo "Not building maven-release-plugin auto commit - this is just for preparation for dev/releases";
-    fi
+  - mvn test -P !build-extras -B  || travis_terminate 1;
+  - chmod +x ./travis-ci/before-deploy.sh ./travis-ci/deploy.sh ./travis-ci/cleanup.sh || travis_terminate 1;
+  - ./travis-ci/before-deploy.sh;
+  - ./travis-ci/deploy.sh;
+  - ./travis-ci/cleanup.sh;
 
 cache:
   directories:
