@@ -32,7 +32,7 @@ if [[ "$TRAVIS_COMMIT_DESCRIPTION" != *"maven-release-plugin"* ]];then
         mvn --batch-mode release:clean release:prepare  || { echo $0: mvn failed; exit 1; }
         mvn release:perform --settings travis-ci/settings.xml  || { echo $0: mvn failed; exit 1; }
     else if [ "$TRAVIS_PULL_REQUEST" != "" ] && [ "$TRAVIS_EVENT_TYPE" == "pull_request" ];then
-            mvn --batch-mode release:clean release:prepare release:stage --settings travis-ci/settings.xml || { echo $0: mvn failed; exit 1; }
+            mvn deploy --settings travis-ci/settings.xml || { echo $0: mvn failed; exit 1; }
         fi
     fi
 
