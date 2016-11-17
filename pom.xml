@@ -3,7 +3,7 @@
 
     <groupId>com.github.dikhan</groupId>
     <artifactId>pagerduty-client</artifactId>
-    <version>2.0.3</version>
+    <version>2.0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>pagerduty-client</name>
@@ -40,7 +40,7 @@
         <connection>scm:git:git@github.com:dikhan/pagerduty-client.git</connection>
         <developerConnection>scm:git:git@github.com:dikhan/pagerduty-client.git</developerConnection>
         <url>git@github.com:dikhan/pagerduty-client.git</url>
-      <tag>pagerduty-client-2.0.3</tag>
+      <tag>pagerduty-client-1.0.322</tag>
   </scm>
 
     <issueManagement>
