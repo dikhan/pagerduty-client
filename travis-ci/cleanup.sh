@@ -11,11 +11,14 @@ if [[ "$TRAVIS_COMMIT_DESCRIPTION" != *"maven-release-plugin"* ]];then
     if [ "$TRAVIS_BRANCH" == "master" ] || [ "$TRAVIS_EVENT_TYPE" == "pull_request" ];then
         # Clean up gpg content
         shred --remove travis-ci/signingkey.asc
-    #    gpg --yes --batch --delete-key $GPG_KEY_NAME
-    #    gpg --yes --batch --delete-secret-key $GPG_KEY_NAME
+        # gpg --yes --batch --delete-key $GPG_KEY_NAME
+        # gpg --yes --batch --delete-secret-key $GPG_KEY_NAME
 
-        # Clean up GitHub bits and bobs
+        # Clean up ssh bits and bobs
+        eval "$(ssh-agent -s)"
         ssh-add -D
+        
+        # Clean up GitHub bits and bobs
         shred --remove ~/.ssh/github.com_rsa.pem
         git config --global --unset user.email
         git config --global --unset user.name
