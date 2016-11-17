@@ -32,6 +32,7 @@ if [[ "$TRAVIS_COMMIT_DESCRIPTION" != *"maven-release-plugin"* ]];then
         mvn --batch-mode release:clean release:prepare  || { echo $0: mvn failed; exit 1; }
         mvn release:perform --settings travis-ci/settings.xml  || { echo $0: mvn failed; exit 1; }
     else if [ "$TRAVIS_PULL_REQUEST" != "" ] && [ "$TRAVIS_EVENT_TYPE" == "pull_request" ];then
+            (cat pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}' | grep SNAPSHOT) || { echo $0: version must be a SNAPSHOT; exit 1; }
             mvn deploy --settings travis-ci/settings.xml || { echo $0: mvn failed; exit 1; }
         fi
     fi
