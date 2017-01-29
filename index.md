@@ -37,6 +37,7 @@ trigger event requires two mandatory parameters:
   - description: Text that will appear in the incident's log associated with this event.
 More details can be provided to the incident as previously mentioned by calling the available methods offered by the
 IncidentBuilder.
+
 ```
 TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
         .create("SERVICE_KEY", "Incident Test")
@@ -50,6 +51,7 @@ pagerDutyEventsClient.trigger(incident);
 
 - **Acknowledge**: This will send a new acknowledge incident to PagerDuty based upon the 'serviceKey' and 'incidentKey'
 provided. Please note that PagerDuty does not support neither description nor details to be added to the acknowledge event.
+
 ```
 AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder
         .create("SERVICE_KEY", "INCIDENT_KEY")
@@ -59,6 +61,7 @@ pagerDutyEventsClient.acknowledge(ack);
 
 - **Resolve**: This will send a new resolve incident to PagerDuty based upon the 'service_key' and 'incident_key' provided.
 More details about the resolution can be provided by populating the details and description fields.
+
 ```
 ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder
         .create("SERVICE_KEY", "INCIDENT_KEY")
