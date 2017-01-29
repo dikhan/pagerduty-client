@@ -1,0 +1,8 @@
+title: Pagerduty-client
+description: Simple pager duty client with full integration with PagerDuty Events APIs v2
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-architect
+
+gems:
+  - jekyll-mentions
