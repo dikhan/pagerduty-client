@@ -19,7 +19,7 @@ import static org.mockserver.model.StringBody.exact;
 
 public class MockServerUtils {
 
-    private static final String EVENT_END_POINT = "/generic/2010-04-15/create_event.json";
+    private static final String EVENT_END_POINT = "/v2/enqueue";
 
     /**
      * Prepare the mock server to receive the given incident and reply with a successful eventResult
@@ -31,7 +31,7 @@ public class MockServerUtils {
     public static void prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(MockServerClient mockServerClient, Incident incident, EventResult eventResult) throws JsonProcessingException {
         String responseBody = "{\"status\":\"" + eventResult.getStatus()
                 + "\",\"message\":\"" + eventResult.getMessage()
-                + "\",\"incident_key\":\"" + eventResult.getIncidentKey() + "\"}";
+                + "\",\"incident_key\":\"" + eventResult.getDedupKey() + "\"}";
         prepareMockServer(mockServerClient, incident, HttpStatus.SC_OK, responseBody);
     }
 

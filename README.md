@@ -48,7 +48,7 @@ TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
 pagerDutyEventsClient.trigger(incident);
 ```
 
-- **Acknowledge**: This will send a new acknowledge incident to PagerDuty based upon the 'serviceKey' and 'incidentKey'
+- **Acknowledge**: This will send a new acknowledge incident to PagerDuty based upon the 'routingKey' and 'dedupKey'
 provided. Please note that PagerDuty does not support neither description nor details to be added to the acknowledge event.
 ```
 AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder

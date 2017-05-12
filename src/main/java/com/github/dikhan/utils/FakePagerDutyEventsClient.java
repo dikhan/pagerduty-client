@@ -42,9 +42,9 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
     @Override
     public EventResult trigger(TriggerIncident incident) throws NotifyEventException {
         EventResult eventResult;
-        if(StringUtils.isBlank(incident.getIncidentKey())) {
-            String incidentKey = String.valueOf(random.nextLong());
-            incident = updateTriggerIncidentWithKey(incident, incidentKey);
+        if(StringUtils.isBlank(incident.getDedupKey())) {
+            String dedupKey = String.valueOf(random.nextLong());
+            incident = updateTriggerIncidentWithKey(incident, dedupKey);
             eventResult = createEventResult(incident);
         } else {
             eventResult = createEventResult(incident);
@@ -56,8 +56,8 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
 
     @Override
     public EventResult acknowledge(AcknowledgeIncident ack) throws NotifyEventException {
-        if(StringUtils.isBlank(ack.getServiceKey()) || StringUtils.isBlank(ack.getIncidentKey())) {
-            throw new NotifyEventException("serviceKey and incidentKey are required parameters to be able to acknowledge an incident");
+        if(StringUtils.isBlank(ack.getRoutingKey()) || StringUtils.isBlank(ack.getDedupKey())) {
+            throw new NotifyEventException("routingKey and dedupKey are required parameters to be able to acknowledge an incident");
         }
         acknowledgedIncidents.add(ack);
         EventResult eventResult = createEventResult(ack);
@@ -67,8 +67,8 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
 
     @Override
     public EventResult resolve(ResolveIncident resolve) throws NotifyEventException {
-        if(StringUtils.isBlank(resolve.getServiceKey()) || StringUtils.isBlank(resolve.getIncidentKey())) {
-            throw new NotifyEventException("serviceKey and incidentKey are required parameters to be able to resolve an incident");
+        if(StringUtils.isBlank(resolve.getRoutingKey()) || StringUtils.isBlank(resolve.getDedupKey())) {
+            throw new NotifyEventException("routingKey and dedupKey are required parameters to be able to resolve an incident");
         }
         resolvedIncidents.add(resolve);
         EventResult eventResult = createEventResult(resolve);
@@ -77,9 +77,9 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
     }
 
     public Set<TriggerIncident> openIncidents() {
-        Set<String> incidentKeysResolved = incidentKeysResolved();
+        Set<String> dedupKeysResolved = dedupKeysResolved();
         return openIncidents.stream()
-                .filter(incident -> !incidentKeysResolved.contains(incident.getIncidentKey()))
+                .filter(incident -> !dedupKeysResolved.contains(incident.getDedupKey()))
                 .collect(Collectors.toSet());
     }
 
@@ -92,23 +92,21 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
     }
 
     private EventResult createEventResult(Incident incident) {
-        return EventResult.successEvent("success-" + incident.getEventType().getEventType(), "Event processed", incident.getIncidentKey());
+        return EventResult.successEvent("success-" + incident.getEventType().getEventType(), "Event processed", incident.getDedupKey());
     }
 
-    public Set<String> incidentKeysResolved() {
+    public Set<String> dedupKeysResolved() {
         return resolvedIncidents.stream()
-                .map(Incident::getIncidentKey)
+                .map(Incident::getDedupKey)
                 .collect(Collectors.toSet());
     }
 
-    private TriggerIncident updateTriggerIncidentWithKey(TriggerIncident incident, String incidentKey) {
+    private TriggerIncident updateTriggerIncidentWithKey(TriggerIncident incident, String dedupKey) {
         return TriggerIncident.TriggerIncidentBuilder
-                .create(incident.getServiceKey(), incident.getDescription())
-                .incidentKey(incidentKey)
-                .client(incident.getClient())
-                .clientUrl(incident.getClientUrl())
-                .details(incident.getDetails())
-                .contexts(incident.getContexts()).build();
+                .newBuilder(incident.getRoutingKey())
+                .setDedupKey(dedupKey)
+                .setPayload(incident.getPayload())
+                .build();
     }
 
 }

@@ -2,54 +2,70 @@ package com.github.dikhan.utils;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.github.dikhan.domain.*;
+import org.junit.Before;
 import org.junit.Test;
 
-import com.github.dikhan.domain.AcknowledgeIncident;
-import com.github.dikhan.domain.EventResult;
-import com.github.dikhan.domain.ResolveIncident;
-import com.github.dikhan.domain.TriggerIncident;
 import com.github.dikhan.exceptions.NotifyEventException;
 
 public class FakePagerDutyEventsClientTest {
 
     private final FakePagerDutyEventsClient fakePagerDutyEventsClient = FakePagerDutyEventsClient.create();
+    private Payload payload;
+    private final String ROUTING_KEY = "ROUTING_KEY";
+    private final String DEDUP_KEY = "DedupKey";
+
+
+    @Before
+    public void setup() {
+        payload = Payload.Builder.newBuilder()
+                .setSource("testing host")
+                .setSeverity(Severity.INFO)
+                .setSummary("This is an incident test to test PagerDutyEventsClient")
+                .build();
+    }
 
     @Test
     public void triggerIncident() throws NotifyEventException {
-        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.create("ServiceKey", "Some issue description").build();
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.newBuilder(ROUTING_KEY)
+                .setPayload(payload)
+                .build();
         fakePagerDutyEventsClient.trigger(incident);
         assertThat(fakePagerDutyEventsClient.openIncidents()).hasSize(1);
     }
 
     @Test
-    public void triggerIncidentWithIncidentKey() throws NotifyEventException {
-        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
-                .create("ServiceKey", "Some issue description")
-                .incidentKey("IncidentKey").build();
+    public void triggerIncidentWithDedupKey() throws NotifyEventException {
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.newBuilder(ROUTING_KEY)
+                .setDedupKey("DedupKey")
+                .setPayload(payload)
+                .build();
         fakePagerDutyEventsClient.trigger(incident);
         assertThat(fakePagerDutyEventsClient.openIncidents()).containsExactly(incident);
     }
 
     @Test
     public void acknowledgeIncident() throws NotifyEventException {
-        AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder.create("ServiceKey", "IncidentKey").build();
+        AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder.newBuilder(ROUTING_KEY, DEDUP_KEY).build();
         fakePagerDutyEventsClient.acknowledge(ack);
         assertThat(fakePagerDutyEventsClient.acknowledgedIncidents()).containsExactly(ack);
     }
 
     @Test
     public void resolveIncident() throws NotifyEventException {
-        ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder.create("ServiceKey", "IncidentKey").build();
+        ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder.newBuilder(ROUTING_KEY, DEDUP_KEY).build();
         fakePagerDutyEventsClient.resolve(resolve);
         assertThat(fakePagerDutyEventsClient.resolvedIncidents()).containsExactly(resolve);
     }
 
     @Test
     public void triggerAndResolveIncident() throws NotifyEventException {
-        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.create("ServiceKey", "Some issue description").build();
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.newBuilder(ROUTING_KEY)
+                .setPayload(payload)
+                .build();
         EventResult eventResult = fakePagerDutyEventsClient.trigger(incident);
 
-        ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder.create("ServiceKey", eventResult.getIncidentKey()).build();
+        ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder.newBuilder(ROUTING_KEY, eventResult.getDedupKey()).build();
         fakePagerDutyEventsClient.resolve(resolve);
         assertThat(fakePagerDutyEventsClient.resolvedIncidents()).containsExactly(resolve);
         assertThat(fakePagerDutyEventsClient.openIncidents()).isEmpty();
