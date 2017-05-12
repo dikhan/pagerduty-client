@@ -1,33 +1,26 @@
 package com.github.dikhan.utils;
 
-import java.util.Arrays;
-
-import com.github.dikhan.domain.AcknowledgeIncident;
-import com.github.dikhan.domain.ImageContext;
-import com.github.dikhan.domain.LinkContext;
-import com.github.dikhan.domain.ResolveIncident;
-import com.github.dikhan.domain.TriggerIncident;
+import com.github.dikhan.domain.*;
 
 public class IncidentHelper {
 
-    public static TriggerIncident prepareSampleTriggerIncident(String serviceKey) {
-        LinkContext linkContext = new LinkContext("http://link-context.com");
-        ImageContext imageContext = new ImageContext("http://image-context.com");
+    public static TriggerIncident prepareSampleTriggerIncident(String routingKey) {
         return TriggerIncident.TriggerIncidentBuilder
-                .create(serviceKey, "HealthCheck failed")
-                .client("PagerDutyEventsClientTest")
-                .details("Issue details")
-                .clientUrl("http://www.issue-origin.com")
-                .contexts(Arrays.asList(linkContext, imageContext))
+                .newBuilder(routingKey)
+                .setPayload(Payload.Builder.newBuilder()
+                        .setSeverity(Severity.INFO)
+                        .setSummary("HealthCheck failed")
+                        .setSource("testing source")
+                        .build())
                 .build();
     }
 
-    public static AcknowledgeIncident prepareSampleAcknowledgementIncident(String serviceKey, String incidentKey) {
-        return AcknowledgeIncident.AcknowledgeIncidentBuilder.create(serviceKey, incidentKey).build();
+    public static AcknowledgeIncident prepareSampleAcknowledgementIncident(String routingKey, String dedupKey) {
+        return AcknowledgeIncident.AcknowledgeIncidentBuilder.newBuilder(routingKey, dedupKey).build();
     }
 
-    public static ResolveIncident prepareSampleResolveIncident(String serviceKey, String incidentKey) {
-        return ResolveIncident.ResolveIncidentBuilder.create(serviceKey, incidentKey).build();
+    public static ResolveIncident prepareSampleResolveIncident(String routingKey, String dedupKey) {
+        return ResolveIncident.ResolveIncidentBuilder.newBuilder(routingKey, dedupKey).build();
     }
 
 }

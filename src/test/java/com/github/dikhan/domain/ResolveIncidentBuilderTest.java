@@ -6,16 +6,16 @@ import com.github.dikhan.exceptions.NotifyEventException;
 
 public class ResolveIncidentBuilderTest {
 
-    @Test(expected = NullPointerException.class)
-    public void notAbleToCreateTriggerIncidentIfMandatoryFieldServiceKeyIsNull() throws NotifyEventException {
-        String serviceKey = null;
-        ResolveIncident.ResolveIncidentBuilder.create(serviceKey, "IncidentKey").build();
+    @Test(expected = IllegalArgumentException.class)
+    public void notAbleToCreateTriggerIncidentIfMandatoryFieldRoutingKeyIsNull() throws NotifyEventException {
+        String routingKey = null;
+        ResolveIncident.ResolveIncidentBuilder.newBuilder(routingKey, "DedupKey").build();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void notAbleToCreateTriggerIncidentIfMandatoryFieldIncidentKeyIsNull() throws NotifyEventException {
-        String incidentKey = null;
-        ResolveIncident.ResolveIncidentBuilder.create("ServiceKey", incidentKey).build();
+    @Test(expected = IllegalArgumentException.class)
+    public void notAbleToCreateTriggerIncidentIfMandatoryFieldDedupKeyIsNull() throws NotifyEventException {
+        String dedupKey = null;
+        ResolveIncident.ResolveIncidentBuilder.newBuilder("routingKey", dedupKey).build();
     }
 
 }

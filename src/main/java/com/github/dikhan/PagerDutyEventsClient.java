@@ -1,17 +1,10 @@
 package com.github.dikhan;
 
-import java.util.Arrays;
-
-import com.github.dikhan.domain.ImageContext;
-import com.github.dikhan.domain.LinkContext;
+import com.github.dikhan.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.dikhan.domain.AcknowledgeIncident;
-import com.github.dikhan.domain.EventResult;
-import com.github.dikhan.domain.ResolveIncident;
-import com.github.dikhan.domain.TriggerIncident;
 import com.github.dikhan.exceptions.NotifyEventException;
 
 public class PagerDutyEventsClient {
@@ -26,30 +19,35 @@ public class PagerDutyEventsClient {
     }
 
     public static void main(String[] args) throws NotifyEventException {
+        String routingKey = "ROUTING_KEY";
+        String dedupKey = "DEDUP_KEY";
+
         PagerDutyEventsClient pagerDutyEventsClient = create();
+        Payload payload = Payload.Builder.newBuilder()
+                .setSummary("This is an incident test to test PagerDutyEventsClient")
+                .setSource("testing host")
+                .setSeverity(Severity.INFO)
+                .build();
         TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
-                .create("SERVICE_KEY", "Incident Test")
-                .client("Creacodetive - PagerDutyEventsClient")
-                .clientUrl("http://www.creacodetive.com")
-                .details("This is an incident test to test PagerDutyEventsClient")
-                .contexts(Arrays.asList(new ImageContext("http://src.com"), new LinkContext("http://href.com")))
+                .newBuilder(routingKey)
+                .setDedupKey(dedupKey)
+                .setPayload(payload)
                 .build();
         pagerDutyEventsClient.trigger(incident);
 
         AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder
-                .create("SERVICE_KEY", "INCIDENT_KEY")
+                .newBuilder(routingKey, dedupKey)
                 .build();
         pagerDutyEventsClient.acknowledge(ack);
 
         ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder
-                .create("SERVICE_KEY", "INCIDENT_KEY")
-                .details("Resolving - This is an incident test to test PagerDutyEventsClient")
-                .description("Resolving description").build();
+                .newBuilder(routingKey, dedupKey)
+                .build();
         pagerDutyEventsClient.resolve(resolve);
     }
 
     /**
-     * Helper method to create a PagerDuty Events Client. Note that an ApiAccess key is not needed in order to make
+     * Helper method to newBuilder a PagerDuty Events Client. Note that an ApiAccess key is not needed in order to make
      * requests to PagerDuty Events API, only integration keys are needed (specified in the Incidents) which target the
      * service where the incident will be created.
      * For more information about the difference between PagerDuty APIs (REST API vs Events API) refer
@@ -63,7 +61,7 @@ public class PagerDutyEventsClient {
     }
 
     /**
-     * Simple helper method to create a PagerDuty client with specific event api definition.
+     * Simple helper method to newBuilder a PagerDuty client with specific event api definition.
      *
      * @param eventApi
      *            Url of the end point to post notifications. This method should only be used for testing purposes as
@@ -94,7 +92,7 @@ public class PagerDutyEventsClient {
 
     protected static class PagerDutyClientBuilder {
 
-        private static final String PAGER_DUTY_EVENT_API = "https://events.pagerduty.com/generic/2010-04-15/create_event.json";
+        private static final String PAGER_DUTY_EVENT_API = "https://events.pagerduty.com/v2/enqueue";
 
         private String eventApi;
 

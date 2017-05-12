@@ -4,18 +4,18 @@ public class EventResult {
 
     private final String status;
     private final String message;
-    private final String incidentKey;
+    private final String dedupKey;
     private final String errors;
 
     private EventResult(EventResultBuilder eventResultBuilder) {
         this.status = eventResultBuilder.getStatus();
         this.message = eventResultBuilder.getMessage();
-        this.incidentKey = eventResultBuilder.getIncidentKey();
+        this.dedupKey = eventResultBuilder.getDedupKey();
         this.errors = eventResultBuilder.getErrors();
     }
 
-    public static EventResult successEvent(String status, String message, String incidentKey) {
-        return new EventResultBuilder(status, message).success(incidentKey).build();
+    public static EventResult successEvent(String status, String message, String dedupKey) {
+        return new EventResultBuilder(status, message).success(dedupKey).build();
     }
 
     public static EventResult errorEvent(String status, String message, String errors) {
@@ -30,8 +30,8 @@ public class EventResult {
         return message;
     }
 
-    public String getIncidentKey() {
-        return incidentKey;
+    public String getDedupKey() {
+        return dedupKey;
     }
 
     public String getErrors() {
@@ -41,7 +41,7 @@ public class EventResult {
     private static class EventResultBuilder {
         private final String status;
         private final String message;
-        private String incidentKey;
+        private String dedupKey;
         private String errors;
 
         public EventResultBuilder(String status, String message) {
@@ -49,8 +49,8 @@ public class EventResult {
             this.message = message;
         }
 
-        public EventResultBuilder success(String incidentKey) {
-            this.incidentKey = incidentKey;
+        public EventResultBuilder success(String dedupKey) {
+            this.dedupKey = dedupKey;
             return this;
         }
 
@@ -67,8 +67,8 @@ public class EventResult {
             return message;
         }
 
-        public String getIncidentKey() {
-            return incidentKey;
+        public String getDedupKey() {
+            return dedupKey;
         }
 
         public String getErrors() {
@@ -90,7 +90,7 @@ public class EventResult {
 
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
         if (message != null ? !message.equals(that.message) : that.message != null) return false;
-        if (incidentKey != null ? !incidentKey.equals(that.incidentKey) : that.incidentKey != null) return false;
+        if (dedupKey != null ? !dedupKey.equals(that.dedupKey) : that.dedupKey != null) return false;
         return !(errors != null ? !errors.equals(that.errors) : that.errors != null);
 
     }
@@ -99,7 +99,7 @@ public class EventResult {
     public int hashCode() {
         int result = status != null ? status.hashCode() : 0;
         result = 31 * result + (message != null ? message.hashCode() : 0);
-        result = 31 * result + (incidentKey != null ? incidentKey.hashCode() : 0);
+        result = 31 * result + (dedupKey != null ? dedupKey.hashCode() : 0);
         result = 31 * result + (errors != null ? errors.hashCode() : 0);
         return result;
     }
@@ -109,7 +109,7 @@ public class EventResult {
         return "EventResult{" +
                 "status='" + status + '\'' +
                 ", message='" + message + '\'' +
-                ", incidentKey='" + incidentKey + '\'' +
+                ", dedupKey='" + dedupKey + '\'' +
                 ", errors='" + errors + '\'' +
                 '}';
     }

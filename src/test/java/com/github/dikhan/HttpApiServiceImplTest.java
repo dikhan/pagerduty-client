@@ -25,7 +25,7 @@ public class HttpApiServiceImplTest {
     private final String MOCK_PAGER_DUTY_HOSTNAME = "localhost";
     private final int MOCK_PAGER_DUTY_PORT = mockServerRule.getPort();
 
-    private final String EVENT_END_POINT = "/generic/2010-04-15/create_event.json";
+    private final String EVENT_END_POINT = "/v2/enqueue";
     private final String EVENT_API = "http://" + MOCK_PAGER_DUTY_HOSTNAME + ":" + MOCK_PAGER_DUTY_PORT + "/" + EVENT_END_POINT;
 
     private HttpApiServiceImpl httpApiServiceImpl;
@@ -37,14 +37,14 @@ public class HttpApiServiceImplTest {
 
     @Test
     public void notifyIncidentEventAndSuccessfulResponseFromUpstreamServer() throws Exception {
-        String incidentKey = "INCIDENT_KEY";
+        String dedupKey = "DEDUP_KEY";
         Incident incident = prepareSampleTriggerIncident("SERVICE_KEY");
         MockServerUtils
                 .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
-                        EventHelper.successEvent(incidentKey));
+                        EventHelper.successEvent(dedupKey));
 
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
-        EventResult expectedResult = EventHelper.successEvent(incidentKey);
+        EventResult expectedResult = EventHelper.successEvent(dedupKey);
 
         assertThat(eventResult).isEqualTo(expectedResult);
     }

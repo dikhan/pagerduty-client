@@ -2,7 +2,6 @@ package com.github.dikhan;
 
 import com.github.dikhan.domain.AcknowledgeIncident;
 import com.github.dikhan.domain.EventResult;
-import com.github.dikhan.domain.Incident;
 import com.github.dikhan.domain.ResolveIncident;
 import com.github.dikhan.domain.TriggerIncident;
 import com.github.dikhan.utils.EventHelper;
@@ -25,11 +24,12 @@ public class PagerDutyEventsClientTest {
     private final String MOCK_PAGER_DUTY_HOSTNAME = "localhost";
     private final int MOCK_PAGER_DUTY_PORT = mockServerRule.getPort();
 
-    private final String EVENT_END_POINT = "/generic/2010-04-15/create_event.json";
+    private final String EVENT_END_POINT = "/v2/enqueue";
     private final String EVENT_API = "http://" + MOCK_PAGER_DUTY_HOSTNAME + ":" + MOCK_PAGER_DUTY_PORT + "/" + EVENT_END_POINT;
 
-    private final String SERVICE_KEY = "SERVICE_KEY";
-    private final String INCIDENT_KEY = "INCIDENT_KEY";
+
+    private final String ROUTING_KEY = "ROUTING_KEY";
+    private final String DEDUP_KEY = "DEDUP_KEY";
 
     private PagerDutyEventsClient pagerDutyEventsClient;
 
@@ -40,37 +40,43 @@ public class PagerDutyEventsClientTest {
 
     @Test
     public void triggerAlert() throws Exception {
-        TriggerIncident incident = IncidentHelper.prepareSampleTriggerIncident(SERVICE_KEY);
+        TriggerIncident incident = IncidentHelper.prepareSampleTriggerIncident(ROUTING_KEY);
         MockServerUtils
                 .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
-                        EventHelper.successEvent(INCIDENT_KEY));
+                        EventHelper.successEvent(DEDUP_KEY));
 
         EventResult eventResult = pagerDutyEventsClient.trigger(incident);
-        EventResult expectedEventResult = EventHelper.successEvent(INCIDENT_KEY);
+        EventResult expectedEventResult = EventHelper.successEvent(DEDUP_KEY);
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
 
     @Test
+    public void triggerAlertRealServer() throws Exception {
+        TriggerIncident incident = IncidentHelper.prepareSampleTriggerIncident(ROUTING_KEY);
+        EventResult eventResult = pagerDutyEventsClient.trigger(incident);
+        System.out.println(eventResult);
+    }
+    @Test
     public void acknowledgeAlert() throws Exception {
-        AcknowledgeIncident ack = IncidentHelper.prepareSampleAcknowledgementIncident(SERVICE_KEY, INCIDENT_KEY);
+        AcknowledgeIncident ack = IncidentHelper.prepareSampleAcknowledgementIncident(ROUTING_KEY, DEDUP_KEY);
         MockServerUtils
                 .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, ack,
-                        EventHelper.successEvent(INCIDENT_KEY));
+                        EventHelper.successEvent(DEDUP_KEY));
 
         EventResult eventResult = pagerDutyEventsClient.acknowledge(ack);
-        EventResult expectedEventResult = EventHelper.successEvent(INCIDENT_KEY);
+        EventResult expectedEventResult = EventHelper.successEvent(DEDUP_KEY);
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
 
     @Test
     public void resolveAlert() throws Exception {
-        ResolveIncident resolveIncident = IncidentHelper.prepareSampleResolveIncident(SERVICE_KEY, INCIDENT_KEY);
+        ResolveIncident resolveIncident = IncidentHelper.prepareSampleResolveIncident(ROUTING_KEY, DEDUP_KEY);
         MockServerUtils
                 .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, resolveIncident,
-                        EventHelper.successEvent(INCIDENT_KEY));
+                        EventHelper.successEvent(DEDUP_KEY));
 
         EventResult eventResult = pagerDutyEventsClient.resolve(resolveIncident);
-        EventResult expectedEventResult = EventHelper.successEvent(INCIDENT_KEY);
+        EventResult expectedEventResult = EventHelper.successEvent(DEDUP_KEY);
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
 
