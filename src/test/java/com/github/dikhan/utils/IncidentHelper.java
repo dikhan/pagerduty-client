@@ -6,8 +6,7 @@ public class IncidentHelper {
 
     public static TriggerIncident prepareSampleTriggerIncident(String routingKey) {
         return TriggerIncident.TriggerIncidentBuilder
-                .newBuilder(routingKey)
-                .setPayload(Payload.Builder.newBuilder()
+                .newBuilder(routingKey, Payload.Builder.newBuilder()
                         .setSeverity(Severity.INFO)
                         .setSummary("HealthCheck failed")
                         .setSource("testing source")

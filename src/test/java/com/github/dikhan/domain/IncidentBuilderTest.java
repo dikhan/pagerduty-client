@@ -9,15 +9,15 @@ public class IncidentBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void notAbleToCreateTriggerIncidentIfMandatoryFieldRoutingKeyIsNull() throws NotifyEventException {
         String routingKey = null;
-        EventType eventType = EventType.ACKNOWLEDGE;
-        IncidentBuilderMock.create(routingKey, eventType);
+        EventAction eventAction = EventAction.ACKNOWLEDGE;
+        IncidentBuilderMock.create(routingKey, eventAction);
     }
 
     @Test(expected = NullPointerException.class)
     public void notAbleToCreateTriggerIncidentIfMandatoryFieldEventTypeIsNull() throws NotifyEventException {
         String routingKey = "routingKey";
-        EventType eventType = null;
-        IncidentBuilderMock.create(routingKey, eventType);
+        EventAction eventAction = null;
+        IncidentBuilderMock.create(routingKey, eventAction);
     }
 
     private static class IncidentBuilderMock extends Incident.IncidentBuilder<IncidentBuilderMock> {
@@ -27,10 +27,10 @@ public class IncidentBuilderTest {
          *
          * @param routingKey The GUID of one of your "Generic API" services. This is the "Integration Key" listed on a Generic API's
          *                   service detail page.
-         * @param eventType  The type of event. Can be trigger, acknowledge or resolve.
+         * @param eventAction  The type of event. Can be trigger, acknowledge or resolve.
          */
-        private IncidentBuilderMock(String routingKey, EventType eventType) {
-            super(routingKey, eventType);
+        private IncidentBuilderMock(String routingKey, EventAction eventAction) {
+            super(routingKey, eventAction);
         }
 
         /**
@@ -40,8 +40,8 @@ public class IncidentBuilderTest {
            return this;
         }
 
-        public static IncidentBuilderMock create(String routingKey, EventType eventType) {
-            return new IncidentBuilderMock(routingKey, eventType);
+        public static IncidentBuilderMock create(String routingKey, EventAction eventAction) {
+            return new IncidentBuilderMock(routingKey, eventAction);
         }
     }
 }

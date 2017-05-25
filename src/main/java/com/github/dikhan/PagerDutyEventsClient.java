@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import com.github.dikhan.exceptions.NotifyEventException;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+
 public class PagerDutyEventsClient {
 
     private static final Logger log = LoggerFactory.getLogger(PagerDutyEventsClient.class);
@@ -27,11 +30,15 @@ public class PagerDutyEventsClient {
                 .setSummary("This is an incident test to test PagerDutyEventsClient")
                 .setSource("testing host")
                 .setSeverity(Severity.INFO)
+                .setTimestamp(OffsetDateTime.now())
                 .build();
+
+        // test client and client url
         TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
-                .newBuilder(routingKey)
+                .newBuilder(routingKey, payload)
                 .setDedupKey(dedupKey)
-                .setPayload(payload)
+                .setClient("client")
+                .setClientUrl("https://monitoring.example.com")
                 .build();
         pagerDutyEventsClient.trigger(incident);
 
@@ -52,9 +59,9 @@ public class PagerDutyEventsClient {
      * service where the incident will be created.
      * For more information about the difference between PagerDuty APIs (REST API vs Events API) refer
      * to:
-     * @see <a href="https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-">What is the difference between PagerDuty APIs?</a>
-     * 
+     *
      * @return PagerDuty client which allows interaction with the service via PagerDuty Events API
+     * @see <a href="https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-">What is the difference between PagerDuty APIs?</a>
      */
     public static PagerDutyEventsClient create() {
         return new PagerDutyClientBuilder().build();
@@ -63,9 +70,8 @@ public class PagerDutyEventsClient {
     /**
      * Simple helper method to newBuilder a PagerDuty client with specific event api definition.
      *
-     * @param eventApi
-     *            Url of the end point to post notifications. This method should only be used for testing purposes as
-     *            event should always be sent to events.pagerduty.com
+     * @param eventApi Url of the end point to post notifications. This method should only be used for testing purposes as
+     *                 event should always be sent to events.pagerduty.com
      * @return PagerDuty client which allows interaction with the service via API calls
      */
     public static PagerDutyEventsClient create(String eventApi) {

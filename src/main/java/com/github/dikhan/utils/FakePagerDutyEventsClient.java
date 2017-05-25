@@ -92,7 +92,7 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
     }
 
     private EventResult createEventResult(Incident incident) {
-        return EventResult.successEvent("success-" + incident.getEventType().getEventType(), "Event processed", incident.getDedupKey());
+        return EventResult.successEvent("success-" + incident.getEventAction().getEventType(), "Event processed", incident.getDedupKey());
     }
 
     public Set<String> dedupKeysResolved() {
@@ -103,9 +103,8 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
 
     private TriggerIncident updateTriggerIncidentWithKey(TriggerIncident incident, String dedupKey) {
         return TriggerIncident.TriggerIncidentBuilder
-                .newBuilder(incident.getRoutingKey())
+                .newBuilder(incident.getRoutingKey(), incident.getPayload())
                 .setDedupKey(dedupKey)
-                .setPayload(incident.getPayload())
                 .build();
     }
 
