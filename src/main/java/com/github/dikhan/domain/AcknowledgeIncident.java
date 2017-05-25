@@ -11,12 +11,11 @@ public class AcknowledgeIncident extends Incident {
     public static class AcknowledgeIncidentBuilder extends Incident.IncidentBuilder<AcknowledgeIncidentBuilder> {
 
         private AcknowledgeIncidentBuilder(String routingKey, String dedupKey) {
-            super(routingKey, EventType.ACKNOWLEDGE);
+            super(routingKey, EventAction.ACKNOWLEDGE);
             if (StringUtils.isBlank(dedupKey)) {
                 throw new IllegalArgumentException("dedupKey must not be null, it is a mandatory param");
             }
             super.setDedupKey(dedupKey);
-            // the following fields have no effect on acknowledge incident
         }
 
         /**

@@ -5,31 +5,30 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The link type is used to attach hyperlinks to an incident.
+ * This link context is used to attach text links to the incident
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LinkContext extends Context {
-
-    @JsonProperty
+public class LinkContext {
+    @JsonProperty("href")
     private final String href;
-    @JsonProperty
-    private String text;
+    @JsonProperty("text")
+    private final String text;
 
+    /**
+     * @param href URL of the link to be attached.
+     * @param text Plain text that describes the purpose of the link, and can be used as the link's text.
+     */
     @JsonCreator
-    public LinkContext(String href) {
-        super("link");
+    public LinkContext(String href, String text) {
         this.href = href;
+        this.text = text;
     }
 
-    public String href() {
+    public String getHref() {
         return href;
     }
 
-    public String text() {
+    public String getText() {
         return text;
-    }
-
-    public void text(String text) {
-        this.text = text;
     }
 }

@@ -3,8 +3,8 @@
 ![][pagerduty-client-logo]
 
 PagerDuty Events Client aims to provide a full-fledged Java client which is easy to use and integrates seamlessly
-with PagerDuty Events API. Note that the library does not integrate with PagerDuty REST Api - it is only meant
-for PagerDuty Events API. Please refer to the following link to see the differences between PagerDuty REST API and
+with PagerDuty Events API v2. Note that the library does not integrate with PagerDuty REST Api - it is only meant
+for PagerDuty Events API v2. Please refer to the following link to see the differences between PagerDuty REST API and
 Events API:
 
 [What is the difference between PagerDuty APIs?](https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-)
@@ -29,41 +29,61 @@ PagerDutyEventsClient pagerDutyEventsClient = PagerDutyEventsClient.create();
 The library supports the creation of three different type of incidents. For your reference, below are examples
 on how to create each incident type as well as how to use PagerDutyEventsClient to perform the according operation:
 
-- **Trigger**: This will send a new 'trigger' incident to PagerDuty containing the details specified in the IncidentBuilder.
+### Trigger:
+This will send a new 'trigger' incident to PagerDuty containing the details specified in the IncidentBuilder.
 A helper IncidentBuilder is provided for the sake of simplicity to ease with the creation of trigger incidents. The
 trigger event requires two mandatory parameters:
-  - service_key (The GUID of one of your "Generic API" services. This is the "Integration Key" listed on a Generic
-    API's service detail page.)
-  - description: Text that will appear in the incident's log associated with this event.
+  - **routingKey**: (The GUID of one of your "Generic API" services. This is the "Integration Key" listed on a Generic
+    API's service detail page.)    
+  - **payload**: The payload class contains mandatory fields that are required to trigger an event. See below
+    to see how to construct payload field.
+
 More details can be provided to the incident as previously mentioned by calling the available methods offered by the
 IncidentBuilder.
+   
+#### Payload:
+The PagerDuty Events API v2 requires that every incident to contain a payload structure, though payload is only 
+supported for trigger incident.  The Payload can be created similar to other trigger using a builder.
+Below contains a list of mandatory fields to build a payload instance.  
+  - **summary**: A brief text summary of the event, used to generate the summaries/titles of any associated alerts.
+  - **source**: The unique location of the affected system, preferably a hostname or FQDN.
+  - **severity**: The perceived severity of the status the event is describing with respect to the affected system.
+    This can be Severity.CRTICAL, Severity.ERROR, Severity.WARNING, or Severity.INFO.
+  
+More details can be provided to the payload by calling the available methods offered by the Payload builder.
 ```
+Payload payload = Payload.Builder.newBuilder()
+        .setSummary("Summary of this incident")
+        .setSource("testing host")
+        .setSeverity(Severity.INFO)
+        .build();
+
 TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
-        .create("SERVICE_KEY", "Incident Test")
-        .client("Creacodetive - PagerDutyEventsClient")
-        .clientUrl("http://www.creacodetive.com")
-        .details("This is an incident test to test PagerDutyEventsClient")
-        .contexts(Arrays.asList(new ImageContext("http://src.com"), new LinkContext("http://href.com")))
+        .newBuilder("ROUTING_KEY", payload)
+        .setDedupKey("DEDUP_KEY")
+        .setTimestamp(OffsetDateTime.now())
         .build();
 pagerDutyEventsClient.trigger(incident);
 ```
 
-- **Acknowledge**: This will send a new acknowledge incident to PagerDuty based upon the 'routingKey' and 'dedupKey'
-provided. Please note that PagerDuty does not support neither description nor details to be added to the acknowledge event.
+### Acknowledge:
+This will send a new acknowledge incident to PagerDuty based upon the 'routingKey' and 'dedupKey'
+provided. Please note that PagerDuty does not support payload added to the acknowledge event, so by default,
+filler context will be used to popular the payload instance.
 ```
 AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder
-        .create("SERVICE_KEY", "INCIDENT_KEY")
+        .newBuilder("ROUTING_KEY", "DEDUP_KEY")
         .build();
 pagerDutyEventsClient.acknowledge(ack);
 ```
 
-- **Resolve**: This will send a new resolve incident to PagerDuty based upon the 'service_key' and 'incident_key' provided.
-More details about the resolution can be provided by populating the details and description fields.
+### Resolve:
+This will send a new resolve incident to PagerDuty based upon the 'service_key' and 'incident_key'
+provided. Payload is also not supported by resolve incident.
 ```
 ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder
-        .create("SERVICE_KEY", "INCIDENT_KEY")
-        .details("Resolving - This is an incident test to test PagerDutyEventsClient")
-        .description("Resolving description").build();
+        .newBuilder("ROUTING_KEY", "DEDUP_KEY")
+        .build();
 pagerDutyEventsClient.resolve(resolve);
 ```
 

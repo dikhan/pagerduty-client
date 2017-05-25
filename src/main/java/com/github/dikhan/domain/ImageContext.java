@@ -5,41 +5,49 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The image type is used to attach images to an incident. Images must be served via HTTPS.
+ * The image context is used to attach images to an incident. Images must be served via HTTPS.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ImageContext extends Context {
+public class ImageContext {
 
-    @JsonProperty
+    @JsonProperty("src")
     private final String src;
-    @JsonProperty
+    @JsonProperty("href")
     private String href;
-    @JsonProperty
+    @JsonProperty("alt")
     private String alt;
 
+    /**
+     * @param src The source of the image being attached to the incident. This image must be served via HTTPS.
+     */
     @JsonCreator
     public ImageContext(String src) {
-        super("image");
         this.src = src;
     }
 
-    public String src() {
+    public String getSrc() {
         return src;
     }
 
-    public String href() {
+    public String getHref() {
         return href;
     }
 
-    public String alt() {
+    public String getAlt() {
         return alt;
     }
 
-    public void href(String href) {
+    /**
+     * @param href optional URL; makes the image a clickable link.
+     */
+    public void setHref(String href) {
         this.href = href;
     }
 
-    public void alt(String alt) {
+    /**
+     * @param alt Optional alternative text for the image.
+     */
+    public void setAlt(String alt) {
         this.alt = alt;
     }
 }

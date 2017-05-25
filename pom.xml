@@ -3,11 +3,11 @@
 
     <groupId>com.github.dikhan</groupId>
     <artifactId>pagerduty-client</artifactId>
-    <version>2.0.5-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>pagerduty-client</name>
-    <description>Simple Java PagerDuty client with full integration with PagerDuty Events APIs</description>
+    <description>Simple Java PagerDuty client with full integration with PagerDuty Events APIs v2</description>
     <url>https://github.com/dikhan/pagerduty-client</url>
     <inceptionYear>2016</inceptionYear>
     <organization />

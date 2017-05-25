@@ -11,7 +11,7 @@ public class ResolveIncident extends Incident {
     public static class ResolveIncidentBuilder extends Incident.IncidentBuilder<ResolveIncidentBuilder> {
 
         private ResolveIncidentBuilder(String routingKey, String dedupKey) {
-            super(routingKey, EventType.RESOLVE);
+            super(routingKey, EventAction.RESOLVE);
             if (StringUtils.isBlank(dedupKey)) {
                 throw new IllegalArgumentException("dedupKey must not be null, it is a mandatory param");
             }

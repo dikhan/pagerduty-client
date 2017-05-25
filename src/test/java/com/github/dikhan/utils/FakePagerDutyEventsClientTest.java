@@ -27,8 +27,7 @@ public class FakePagerDutyEventsClientTest {
 
     @Test
     public void triggerIncident() throws NotifyEventException {
-        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.newBuilder(ROUTING_KEY)
-                .setPayload(payload)
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.newBuilder(ROUTING_KEY, payload)
                 .build();
         fakePagerDutyEventsClient.trigger(incident);
         assertThat(fakePagerDutyEventsClient.openIncidents()).hasSize(1);
@@ -36,9 +35,8 @@ public class FakePagerDutyEventsClientTest {
 
     @Test
     public void triggerIncidentWithDedupKey() throws NotifyEventException {
-        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.newBuilder(ROUTING_KEY)
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.newBuilder(ROUTING_KEY, payload)
                 .setDedupKey("DedupKey")
-                .setPayload(payload)
                 .build();
         fakePagerDutyEventsClient.trigger(incident);
         assertThat(fakePagerDutyEventsClient.openIncidents()).containsExactly(incident);
@@ -60,8 +58,7 @@ public class FakePagerDutyEventsClientTest {
 
     @Test
     public void triggerAndResolveIncident() throws NotifyEventException {
-        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.newBuilder(ROUTING_KEY)
-                .setPayload(payload)
+        TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder.newBuilder(ROUTING_KEY, payload)
                 .build();
         EventResult eventResult = fakePagerDutyEventsClient.trigger(incident);
 
