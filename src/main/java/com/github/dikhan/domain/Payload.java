@@ -1,6 +1,8 @@
 package com.github.dikhan.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.OffsetDateTime;
@@ -218,6 +220,14 @@ public class Payload {
                 throw new IllegalArgumentException("source cannot be blank.");
             }
             Objects.requireNonNull(payload.getSeverity(), "severity cannot be null.");
+            if (!StringUtils.isBlank(payload.getCustomDetails())) {
+                try {
+                    JsonParser parser = new JsonParser();
+                    parser.parse(payload.getCustomDetails());
+                } catch (JsonSyntaxException e) {
+                    throw new IllegalArgumentException("custom details has to be in valid JSON format.");
+                }
+            }
 
             return payload;
         }
