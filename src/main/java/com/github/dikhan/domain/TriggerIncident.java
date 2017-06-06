@@ -6,14 +6,22 @@ import java.util.Objects;
 
 public class TriggerIncident extends Incident {
     @JsonProperty("client")
-    private String client;
+    private final String client;
     @JsonProperty("client_url")
-    private String clientUrl;
+    private final String clientUrl;
 
     private TriggerIncident(TriggerIncidentBuilder builder) {
         super(builder);
         this.client = builder.getClient();
         this.clientUrl = builder.getClientUrl();
+    }
+
+    public String getClient() {
+        return client;
+    }
+
+    public String getClientUrl() {
+        return clientUrl;
     }
 
     public static class TriggerIncidentBuilder extends Incident.IncidentBuilder<TriggerIncidentBuilder> {
