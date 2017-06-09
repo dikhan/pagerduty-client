@@ -1,13 +1,6 @@
 package com.github.dikhan.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import junit.framework.AssertionFailedError;
 import org.junit.Test;
-import sun.jvm.hotspot.utilities.AssertionFailure;
-
-import java.io.IOException;
 
 public class PayloadBuilderTest {
 
