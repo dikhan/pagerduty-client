@@ -8,6 +8,8 @@ for PagerDuty Events API v2. Please refer to the following link to see the diffe
 Events API:
 
 [What is the difference between PagerDuty APIs?](https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-)
+[PagerDuty APIs: Events API and REST API](https://support.pagerduty.com/hc/en-us/articles/214794907-PagerDuty-APIs-Events-API-and-REST-API)
+[Using the Events API V2 to send events to PagerDuty](https://v2.developer.pagerduty.com/docs/events-api-v2)
 
 [![License][license-image]][license-url]  |
 [![version][maven-version]][maven-url]    |
@@ -33,8 +35,8 @@ on how to create each incident type as well as how to use PagerDutyEventsClient 
 This will send a new 'trigger' incident to PagerDuty containing the details specified in the IncidentBuilder.
 A helper IncidentBuilder is provided for the sake of simplicity to ease with the creation of trigger incidents. The
 trigger event requires two mandatory parameters:
-  - **routingKey**: (The GUID of one of your "Generic API" services. This is the "Integration Key" listed on a Generic
-    API's service detail page.)    
+  - **routingKey**: The GUID of one of your "Generic API" services. This is the "Integration Key" listed on a Generic
+    API's service detail page.
   - **payload**: The payload class contains mandatory fields that are required to trigger an event. See below
     to see how to construct payload field.
 
@@ -89,6 +91,8 @@ pagerDutyEventsClient.resolve(resolve);
 
 ## Integration:
 
+### PagerDuty Events Api v2 client
+
 [PagerDuty Events Client](http://search.maven.org/#search|ga|1|dikhan) can be easily integrated in other projects by
 adding the following snippet to the pom:
 
@@ -96,7 +100,7 @@ adding the following snippet to the pom:
 <dependency>
   <groupId>com.github.dikhan</groupId>
   <artifactId>pagerduty-client</artifactId>
-  <version>2.0.2</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -104,6 +108,27 @@ The library uses SL4J facade for logging purposes. Thus, making it fully flexibl
 projects whereby a specific logging implementation is already being used (e,g: log4j, logback, etc).
 
 Snapshots of dev versions can be found at [oss.sonatype.org](https://oss.sonatype.org/content/repositories/snapshots/com/github/dikhan/pagerduty-client/)
+
+### PagerDuty Events Api v1 client
+
+This library has evolved from supporting [PagerDuty Events v1](https://v2.developer.pagerduty.com/docs/events-api) api
+to support [PagerDuty Events v2](https://v2.developer.pagerduty.com/docs/events-api-v2) in the most recent release.
+If you are interested in integrating with PagerDuty Events v1 you can still do so by using the last release version
+that supported v1:
+
+```
+<dependency>
+  <groupId>com.github.dikhan</groupId>
+  <artifactId>pagerduty-client</artifactId>
+  <version>2.0.4</version>
+</dependency>
+```
+
+Please refer to the following tag for more information about the release:
+[pagerduty-client-2.0.4](https://github.com/dikhan/pagerduty-client/releases/tag/pagerduty-client-2.0.4)
+
+For more information about the differentes between the different PagerDuty Events Apis refer to the following link:
+[PagerDuty APIs: Events API and REST API](https://support.pagerduty.com/hc/en-us/articles/214794907-PagerDuty-APIs-Events-API-and-REST-API)
 
 ## Contributing
 
