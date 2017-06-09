@@ -1,17 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.dikhan</groupId>
     <artifactId>pagerduty-client</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <packaging>jar</packaging>
 
     <name>pagerduty-client</name>
     <description>Simple Java PagerDuty client with full integration with PagerDuty Events APIs v2</description>
     <url>https://github.com/dikhan/pagerduty-client</url>
     <inceptionYear>2016</inceptionYear>
-    <organization/>
+    <organization />
 
     <licenses>
         <license>
@@ -33,15 +32,15 @@
         </developer>
     </developers>
 
-    <mailingLists/>
-    <prerequisites/>
-    <modules/>
+    <mailingLists />
+    <prerequisites />
+    <modules />
 
     <scm>
         <connection>scm:git:git@github.com:dikhan/pagerduty-client.git</connection>
         <developerConnection>scm:git:git@github.com:dikhan/pagerduty-client.git</developerConnection>
         <url>git@github.com:dikhan/pagerduty-client.git</url>
-        <tag>pagerduty-client-1.0.322</tag>
+        <tag>pagerduty-client-3.0.0</tag>
     </scm>
 
     <issueManagement>
@@ -201,8 +200,8 @@
         </dependency>
     </dependencies>
 
-    <repositories/>
-    <pluginRepositories/>
+    <repositories />
+    <pluginRepositories />
 
     <build>
         <plugins>
@@ -284,7 +283,7 @@
         </plugins>
     </build>
 
-    <reporting/>
+    <reporting />
 
     <profiles>
         <profile>
