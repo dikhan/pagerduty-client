@@ -3,6 +3,7 @@ package com.github.dikhan.pagerduty.client.events;
 import com.github.dikhan.pagerduty.client.events.domain.*;
 import com.github.dikhan.pagerduty.client.events.exceptions.NotifyEventException;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,15 +30,16 @@ public class PagerDutyEventsClient {
                 .setSource("testing host")
                 .setSeverity(Severity.INFO)
                 .setTimestamp(OffsetDateTime.now())
+                .setCustomDetails(new JSONObject("{\"field\": \"value1\", \"field2\": \"value2\"}"))
                 .build();
 
-        // test client and client url
         TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
                 .newBuilder(routingKey, payload)
                 .setDedupKey(dedupKey)
                 .setClient("client")
                 .setClientUrl("https://monitoring.example.com")
                 .build();
+
         pagerDutyEventsClient.trigger(incident);
 
         AcknowledgeIncident ack = AcknowledgeIncident.AcknowledgeIncidentBuilder
@@ -91,6 +93,12 @@ public class PagerDutyEventsClient {
     public EventResult resolve(ResolveIncident resolve) throws NotifyEventException {
         EventResult eventResult = httpApiServiceImpl.notifyEvent(resolve);
         log.debug("Event result {} for resolve incident {}", eventResult, resolve);
+        return eventResult;
+    }
+
+    public EventResult sendEvent(Incident incident) throws NotifyEventException {
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
+        log.debug("Event result {} for {}", eventResult, incident);
         return eventResult;
     }
 

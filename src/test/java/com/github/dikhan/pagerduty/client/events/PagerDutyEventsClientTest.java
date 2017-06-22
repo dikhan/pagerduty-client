@@ -51,12 +51,6 @@ public class PagerDutyEventsClientTest {
     }
 
     @Test
-    public void triggerAlertRealServer() throws Exception {
-        TriggerIncident incident = IncidentHelper.prepareSampleTriggerIncident(ROUTING_KEY);
-        EventResult eventResult = pagerDutyEventsClient.trigger(incident);
-        System.out.println(eventResult);
-    }
-    @Test
     public void acknowledgeAlert() throws Exception {
         AcknowledgeIncident ack = IncidentHelper.prepareSampleAcknowledgementIncident(ROUTING_KEY, DEDUP_KEY);
         MockServerUtils

@@ -73,8 +73,7 @@ public class TriggerIncident extends Incident {
 
         @Override
         public TriggerIncident build() {
-            TriggerIncident triggerIncident = new TriggerIncident(this);
-            Objects.requireNonNull(triggerIncident.getPayload(),
+            Objects.requireNonNull(getPayload(),
                     "payload must not be null, it is a mandatory param");
 
             return new TriggerIncident(this);

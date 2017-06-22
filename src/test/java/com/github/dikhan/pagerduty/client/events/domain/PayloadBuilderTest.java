@@ -1,5 +1,6 @@
 package com.github.dikhan.pagerduty.client.events.domain;
 
+import org.json.JSONObject;
 import org.junit.Test;
 
 public class PayloadBuilderTest {
@@ -22,20 +23,13 @@ public class PayloadBuilderTest {
     @Test
     public void successfulCreation() {
         Payload.Builder.newBuilder().setSummary("summary").setSource("source")
-                .setSeverity(Severity.INFO).setCustomDetails("details").build();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testCustomeDetailInvalidJsonFormat() {
-        String details = "{\"Name\":\"hello\",}";
-
-        Payload.Builder.newBuilder().setSummary("summary").setSource("source")
-                .setSeverity(Severity.INFO).setCustomDetails(details).build();
+                .setSeverity(Severity.INFO).build();
     }
 
     @Test
     public void testCustomeDetailWithValidJson() {
-        String details = "{\"Name\":\"Hello\"}";
+        JSONObject details = new JSONObject("{\"Name\":\"Hello\"}");
+
 
         Payload.Builder.newBuilder().setSummary("summary").setSource("source")
                 .setSeverity(Severity.INFO).setCustomDetails(details).build();
