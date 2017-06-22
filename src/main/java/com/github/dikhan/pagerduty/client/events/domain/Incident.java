@@ -32,6 +32,10 @@ public abstract class Incident {
         this.links = builder.getLinks();
     }
 
+    public String toString() {
+        return getEventAction().getEventType() + " incident, routing_key: " + getRoutingKey();
+    }
+
     public String getRoutingKey() {
         return routingKey;
     }

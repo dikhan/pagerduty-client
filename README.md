@@ -58,12 +58,12 @@ Payload payload = Payload.Builder.newBuilder()
         .setSummary("Summary of this incident")
         .setSource("testing host")
         .setSeverity(Severity.INFO)
+        .setTimestamp(OffsetDateTime.now())
         .build();
 
 TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
         .newBuilder("ROUTING_KEY", payload)
         .setDedupKey("DEDUP_KEY")
-        .setTimestamp(OffsetDateTime.now())
         .build();
 pagerDutyEventsClient.trigger(incident);
 ```

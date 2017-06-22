@@ -1,13 +1,27 @@
 package com.github.dikhan.pagerduty.client.events;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mashape.unirest.http.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.github.dikhan.utils.JSONObjectSerializer;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class JacksonObjectMapper implements ObjectMapper {
+public class JacksonObjectMapper implements com.mashape.unirest.http.ObjectMapper {
 
-    private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    private static final ObjectMapper jacksonObjectMapper = makeObjectMapper();
+
+    private static ObjectMapper makeObjectMapper() {
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(JSONObject.class, new JSONObjectSerializer());
+        mapper.registerModule(module);
+
+        return mapper;
+    }
+
 
     public <T> T readValue(String value, Class<T> valueType) {
         try {

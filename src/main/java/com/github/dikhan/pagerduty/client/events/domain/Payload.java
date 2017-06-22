@@ -1,9 +1,8 @@
 package com.github.dikhan.pagerduty.client.events.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -29,7 +28,7 @@ public class Payload {
     @JsonProperty("class")
     private final String eventClass;
     @JsonProperty("custom_details")
-    private final String customDetails;
+    private final JSONObject customDetails;
 
     private Payload(Builder builder) {
         this.summary = builder.getSummary();
@@ -71,7 +70,7 @@ public class Payload {
         return eventClass;
     }
 
-    public String getCustomDetails() {
+    public Object getCustomDetails() {
         return customDetails;
     }
 
@@ -83,7 +82,7 @@ public class Payload {
         private String component;
         private String group;
         private String eventClass;
-        private String customDetails;
+        private JSONObject customDetails;
 
         /**
          * Builder which helps constructing new payload instances
@@ -170,7 +169,7 @@ public class Payload {
          * @param customDetails An arbitrary JSON object containing any data you'd like included in the incident log.
          * @return Payload Builder with customDetails field populated to be able to keep populating the instance
          */
-        public Builder setCustomDetails(String customDetails) {
+        public Builder setCustomDetails(JSONObject customDetails) {
             this.customDetails = customDetails;
             return this;
         }
@@ -203,7 +202,7 @@ public class Payload {
             return eventClass;
         }
 
-        public String getCustomDetails() {
+        public JSONObject getCustomDetails() {
             return customDetails;
         }
 
@@ -211,24 +210,15 @@ public class Payload {
          * Make sure the required fields are not empty, then create a payload.
          */
         public Payload build() {
-            Payload payload = new Payload(this);
-            if (StringUtils.isBlank(payload.getSummary())) {
+            if (StringUtils.isBlank(getSummary())) {
                 throw new IllegalArgumentException("summary cannot be blank.");
             }
-            if (StringUtils.isBlank(payload.getSource())) {
+            if (StringUtils.isBlank(getSource())) {
                 throw new IllegalArgumentException("source cannot be blank.");
             }
-            Objects.requireNonNull(payload.getSeverity(), "severity cannot be null.");
-            if (!StringUtils.isBlank(payload.getCustomDetails())) {
-                try {
-                    JsonParser parser = new JsonParser();
-                    parser.parse(payload.getCustomDetails());
-                } catch (JsonSyntaxException e) {
-                    throw new IllegalArgumentException("custom details has to be in valid JSON format.");
-                }
-            }
+            Objects.requireNonNull(getSeverity(), "severity cannot be null.");
 
-            return payload;
+            return new Payload(this);
         }
 
     }
