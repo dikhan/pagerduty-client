@@ -33,7 +33,14 @@ public abstract class Incident {
     }
 
     public String toString() {
-        return getEventAction().getEventType() + " incident, routing_key: " + getRoutingKey();
+        return "Incident {" +
+                " routingKey='" + routingKey + '\'' +
+                ", eventAction=" + eventAction +
+                ", dedupKey='" + dedupKey + '\'' +
+                ", payload=" + payload +
+                ", images=" + images +
+                ", links=" + links +
+                " }";
     }
 
     public String getRoutingKey() {
@@ -111,18 +118,18 @@ public abstract class Incident {
          * @param images array of objects.
          * @return Payload Builder with images field populated to be able to keep populating the instance
          */
-        public Builder setImages(List<ImageContext> images) {
+        public T setImages(List<ImageContext> images) {
             this.images = images;
-            return this;
+            return (T) this;
         }
 
         /**
          * @param links array of objects.
          * @return Payload Builder with links field populated to be able to keep populating the instance
          */
-        public Builder setLinks(List<LinkContext> links) {
+        public T setLinks(List<LinkContext> links) {
             this.links = links;
-            return this;
+            return (T) this;
         }
 
         public String getRoutingKey() {

@@ -24,6 +24,15 @@ public class LinkContext {
         this.text = text;
     }
 
+    @Override
+    public String toString() {
+        return "LinkContext { " +
+                "href=" + href +
+                ", text=" + text +
+                " }";
+    }
+
+
     public String getHref() {
         return href;
     }

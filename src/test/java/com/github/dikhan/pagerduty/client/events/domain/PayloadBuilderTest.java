@@ -30,7 +30,6 @@ public class PayloadBuilderTest {
     public void testCustomeDetailWithValidJson() {
         JSONObject details = new JSONObject("{\"Name\":\"Hello\"}");
 
-
         Payload.Builder.newBuilder().setSummary("summary").setSource("source")
                 .setSeverity(Severity.INFO).setCustomDetails(details).build();
     }

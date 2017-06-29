@@ -42,6 +42,20 @@ public class Payload {
         this.customDetails = builder.getCustomDetails();
     }
 
+    @Override
+    public String toString() {
+        return "Payload { " +
+                "summary=" + summary +
+                ", source=" + source +
+                ", severity=" + severity +
+                ", timestamp=" + timestamp +
+                ", component=" + component +
+                ", group=" + group +
+                ", eventClass=" + eventClass +
+                ", custom_details=" + customDetails +
+                " }";
+    }
+
     public String getSummary() {
         return summary;
     }
