@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PagerDutyEventsClient {
 
@@ -25,19 +27,31 @@ public class PagerDutyEventsClient {
         String dedupKey = "DEDUP_KEY";
 
         PagerDutyEventsClient pagerDutyEventsClient = create();
+
+        JSONObject customDetails = new JSONObject();
+        customDetails.put("field", "value1");
+        customDetails.put("field2", "value2");
+
         Payload payload = Payload.Builder.newBuilder()
                 .setSummary("This is an incident test to test PagerDutyEventsClient")
                 .setSource("testing host")
                 .setSeverity(Severity.INFO)
                 .setTimestamp(OffsetDateTime.now())
-                .setCustomDetails(new JSONObject("{\"field\": \"value1\", \"field2\": \"value2\"}"))
+                .setCustomDetails(customDetails)
                 .build();
+
+        List<ImageContext> imageContextList = new ArrayList<>();
+        imageContextList.add(new ImageContext("src1"));
+        List<LinkContext> linkContextList = new ArrayList<>();
+        linkContextList.add(new LinkContext("href", "text"));
 
         TriggerIncident incident = TriggerIncident.TriggerIncidentBuilder
                 .newBuilder(routingKey, payload)
                 .setDedupKey(dedupKey)
                 .setClient("client")
                 .setClientUrl("https://monitoring.example.com")
+                .setLinks(linkContextList)
+                .setImages(imageContextList)
                 .build();
 
         pagerDutyEventsClient.trigger(incident);
@@ -79,24 +93,21 @@ public class PagerDutyEventsClient {
     }
 
     public EventResult trigger(TriggerIncident incident) throws NotifyEventException {
-        EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
-        log.debug("Event result {}", eventResult);
+        EventResult eventResult = sendEvent(incident);
         return eventResult;
     }
 
     public EventResult acknowledge(AcknowledgeIncident ack) throws NotifyEventException {
-        EventResult eventResult = httpApiServiceImpl.notifyEvent(ack);
-        log.debug("Event result {} for acknowledge incident {}", eventResult, ack);
+        EventResult eventResult = sendEvent(ack);
         return eventResult;
     }
 
     public EventResult resolve(ResolveIncident resolve) throws NotifyEventException {
-        EventResult eventResult = httpApiServiceImpl.notifyEvent(resolve);
-        log.debug("Event result {} for resolve incident {}", eventResult, resolve);
+        EventResult eventResult = sendEvent(resolve);
         return eventResult;
     }
 
-    public EventResult sendEvent(Incident incident) throws NotifyEventException {
+    private EventResult sendEvent(Incident incident) throws NotifyEventException {
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
         log.debug("Event result {} for {}", eventResult, incident);
         return eventResult;

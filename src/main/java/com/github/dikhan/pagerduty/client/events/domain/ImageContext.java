@@ -25,6 +25,15 @@ public class ImageContext {
         this.src = src;
     }
 
+    @Override
+    public String toString() {
+        return "ImageContext { " +
+                "src=" + src +
+                ", href=" + href +
+                ", alt=" + alt +
+                " }";
+    }
+
     public String getSrc() {
         return src;
     }
