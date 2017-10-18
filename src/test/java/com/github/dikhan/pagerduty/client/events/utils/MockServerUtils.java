@@ -1,9 +1,9 @@
 package com.github.dikhan.pagerduty.client.events.utils;
 
-import com.github.dikhan.pagerduty.client.events.domain.EventResult;
-import com.github.dikhan.pagerduty.client.events.domain.Incident;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.dikhan.pagerduty.client.events.domain.EventResult;
+import com.github.dikhan.pagerduty.client.events.domain.Incident;
 import org.apache.http.HttpStatus;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.Delay;
@@ -29,10 +29,18 @@ public class MockServerUtils {
      * @throws JsonProcessingException
      */
     public static void prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(MockServerClient mockServerClient, Incident incident, EventResult eventResult) throws JsonProcessingException {
-        String responseBody = "{\"status\":\"" + eventResult.getStatus()
-                + "\",\"message\":\"" + eventResult.getMessage()
-                + "\",\"incident_key\":\"" + eventResult.getDedupKey() + "\"}";
-        prepareMockServer(mockServerClient, incident, HttpStatus.SC_OK, responseBody);
+        prepareMockServer(mockServerClient, incident, HttpStatus.SC_OK, getSuccessResponseBody(eventResult));
+    }
+
+    /**
+     * Prepare the mock server to receive the given incident and reply with a accepted eventResult
+     * @param mockServerClient mock client to configure the incident/event upon
+     * @param incident expected to be received in the mock server from the client
+     * @param eventResult to be returned by the mock server
+     * @throws JsonProcessingException
+     */
+    public static void prepareMockServerToReceiveGivenIncidentAndReplyWithAcceptedResponse(MockServerClient mockServerClient, Incident incident, EventResult eventResult) throws JsonProcessingException {
+        prepareMockServer(mockServerClient, incident, HttpStatus.SC_ACCEPTED, getSuccessResponseBody(eventResult));
     }
 
     /**
@@ -78,5 +86,11 @@ public class MockServerUtils {
                                 .withBody(responseBody)
                                 .withDelay(new Delay(TimeUnit.SECONDS, 1))
                 );
+    }
+
+    private static String getSuccessResponseBody(EventResult eventResult) {
+        return "{\"status\":\"" + eventResult.getStatus()
+                + "\",\"message\":\"" + eventResult.getMessage()
+                + "\",\"dedup_key\":\"" + eventResult.getDedupKey() + "\"}";
     }
 }

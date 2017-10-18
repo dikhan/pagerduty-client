@@ -80,7 +80,7 @@ pagerDutyEventsClient.acknowledge(ack);
 ```
 
 ### Resolve:
-This will send a new resolve incident to PagerDuty based upon the 'service_key' and 'incident_key'
+This will send a new resolve incident to PagerDuty based upon the 'service_key' and 'dedup_key'
 provided. Payload is also not supported by resolve incident.
 ```
 ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder
