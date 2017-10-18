@@ -40,7 +40,9 @@ public class HttpApiServiceImpl implements ApiService {
             log.debug(IOUtils.toString(jsonResponse.getRawBody()));
             switch(jsonResponse.getStatus()) {
                 case HttpStatus.SC_OK:
-                    return EventResult.successEvent(JsonUtils.getPropertyValue(jsonResponse, "status"), JsonUtils.getPropertyValue(jsonResponse, "message"), JsonUtils.getPropertyValue(jsonResponse, "incident_key"));
+                case HttpStatus.SC_CREATED:
+                case HttpStatus.SC_ACCEPTED:
+                    return EventResult.successEvent(JsonUtils.getPropertyValue(jsonResponse, "status"), JsonUtils.getPropertyValue(jsonResponse, "message"), JsonUtils.getPropertyValue(jsonResponse, "dedup_key"));
                 case HttpStatus.SC_BAD_REQUEST:
                     return EventResult.errorEvent(JsonUtils.getPropertyValue(jsonResponse, "status"), JsonUtils.getPropertyValue(jsonResponse, "message"), JsonUtils.getArrayValue(jsonResponse, "errors"));
                 default:

@@ -49,6 +49,20 @@ public class HttpApiServiceImplTest {
     }
 
     @Test
+    public void notifyIncidentEventAndAcceptedResponseFromUpstreamServer() throws Exception {
+        String dedupKey = "DEDUP_KEY";
+        Incident incident = prepareSampleTriggerIncident("SERVICE_KEY");
+        MockServerUtils
+                .prepareMockServerToReceiveGivenIncidentAndReplyWithAcceptedResponse(mockServerClient, incident,
+                        EventHelper.successEvent(dedupKey));
+
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
+        EventResult expectedResult = EventHelper.successEvent(dedupKey);
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
+
+    @Test
     public void notifyIncidentEventAndErrorResponseFromUpstreamServer() throws Exception {
         Incident incident = prepareSampleTriggerIncident("SERVICE_KEY");
         MockServerUtils.prepareMockServerToReceiveIncidentAndReplyWithWithErrorResponse(mockServerClient, incident,
