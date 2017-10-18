@@ -1,11 +1,9 @@
 package com.github.dikhan.pagerduty.client.events.utils;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.github.dikhan.pagerduty.client.events.PagerDutyEventsClient;
 import com.github.dikhan.pagerduty.client.events.domain.AcknowledgeIncident;
+import com.github.dikhan.pagerduty.client.events.domain.EventResult;
+import com.github.dikhan.pagerduty.client.events.domain.Incident;
 import com.github.dikhan.pagerduty.client.events.domain.ResolveIncident;
 import com.github.dikhan.pagerduty.client.events.domain.TriggerIncident;
 import com.github.dikhan.pagerduty.client.events.exceptions.NotifyEventException;
@@ -13,9 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.dikhan.pagerduty.client.events.PagerDutyEventsClient;
-import com.github.dikhan.pagerduty.client.events.domain.EventResult;
-import com.github.dikhan.pagerduty.client.events.domain.Incident;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Helper class provided for integration testing purposes
@@ -92,7 +91,8 @@ public class FakePagerDutyEventsClient extends PagerDutyEventsClient {
     }
 
     private EventResult createEventResult(Incident incident) {
-        return EventResult.successEvent("success-" + incident.getEventAction().getEventType(), "Event processed", incident.getDedupKey());
+        return EventResult.successEvent("success",
+                String.format("Event (%s) processed", incident.getEventAction().getEventType()), incident.getDedupKey());
     }
 
     public Set<String> dedupKeysResolved() {
