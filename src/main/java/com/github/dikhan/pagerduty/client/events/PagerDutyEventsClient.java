@@ -19,7 +19,9 @@ public class PagerDutyEventsClient {
 
     protected PagerDutyEventsClient(PagerDutyClientBuilder pagerDutyClientBuilder) {
         String eventApi = pagerDutyClientBuilder.getEventApi();
-        this.httpApiServiceImpl = new ApiServiceFactory(eventApi).getDefault();
+        String proxyHost = pagerDutyClientBuilder.getProxyHost();
+        Integer proxyPort = pagerDutyClientBuilder.getProxyPort();
+        this.httpApiServiceImpl = new ApiServiceFactory(eventApi, proxyHost, proxyPort).getDefault();
     }
 
     public static void main(String[] args) throws NotifyEventException {
@@ -92,6 +94,17 @@ public class PagerDutyEventsClient {
         return new PagerDutyClientBuilder().withEventApi(eventApi).build();
     }
 
+    /**
+     * Simple helper method to newBuilder a PagerDuty client with specific proxy configuration
+     *
+     * @param proxyHost Host of the configured proxy used by the PagerDuty client
+     * @param proxyPort Port of the configured proxy used by the PagerDuty client
+     * @return PagerDuty client which allows interaction with the service via API calls
+     */
+    public static PagerDutyEventsClient create(String proxyHost, Integer proxyPort) {
+        return new PagerDutyClientBuilder().withProxyHost(proxyHost).withProxyPort(proxyPort).build();
+    }
+
     public EventResult trigger(TriggerIncident incident) throws NotifyEventException {
         EventResult eventResult = sendEvent(incident);
         return eventResult;
@@ -119,11 +132,24 @@ public class PagerDutyEventsClient {
 
         private String eventApi;
 
+        private String proxyHost;
+        private Integer proxyPort;
+
         public PagerDutyClientBuilder() {
         }
 
         public PagerDutyClientBuilder withEventApi(String eventApi) {
             this.eventApi = eventApi;
+            return this;
+        }
+
+        public PagerDutyClientBuilder withProxyHost(String proxyHost) {
+            this.proxyHost = proxyHost;
+            return this;
+        }
+
+        public PagerDutyClientBuilder withProxyPort(Integer proxyPort) {
+            this.proxyPort = proxyPort;
             return this;
         }
 
@@ -136,6 +162,14 @@ public class PagerDutyEventsClient {
 
         public String getEventApi() {
             return eventApi;
+        }
+
+        public String getProxyHost() {
+            return proxyHost;
+        }
+
+        public Integer getProxyPort() {
+            return proxyPort;
         }
     }
 }
