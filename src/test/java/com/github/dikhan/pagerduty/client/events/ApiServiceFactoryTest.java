@@ -16,4 +16,17 @@ public class ApiServiceFactoryTest {
         assertThat(apiService).isExactlyInstanceOf(HttpApiServiceImpl.class);
         assertThat(apiService).isEqualTo(httpApiService);
     }
+
+    @Test
+    public void apiServiceFactoryWithProxyParamsProducesRightDefaultApiServiceImpl() {
+        String eventApi = "eventApi";
+        String proxyHost = "localhost";
+        Integer proxyPort = 8080;
+        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, proxyHost, proxyPort);
+
+        ApiService apiService = apiServiceFactory.getDefault();
+        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, proxyHost, proxyPort);
+        assertThat(apiService).isExactlyInstanceOf(HttpApiServiceImpl.class);
+        assertThat(apiService).isEqualTo(httpApiService);
+    }
 }

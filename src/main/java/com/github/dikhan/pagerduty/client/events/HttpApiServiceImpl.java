@@ -10,6 +10,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +28,18 @@ public class HttpApiServiceImpl implements ApiService {
         initUnirest();
     }
 
+    public HttpApiServiceImpl(String eventApi, String proxyHost, Integer proxyPort) {
+        this.eventApi = eventApi;
+        initUnirestWithProxy(proxyHost, proxyPort);
+    }
+
     private void initUnirest() {
         Unirest.setObjectMapper(new JacksonObjectMapper());
+    }
+
+    private void initUnirestWithProxy(String proxyHost, Integer proxyPort) {
+        initUnirest();
+        Unirest.setProxy(new HttpHost(proxyHost, proxyPort));
     }
 
     public EventResult notifyEvent(Incident incident) throws NotifyEventException {
