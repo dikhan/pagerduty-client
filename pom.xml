@@ -3,7 +3,7 @@
 
     <groupId>com.github.dikhan</groupId>
     <artifactId>pagerduty-client</artifactId>
-    <version>3.0.5-SNAPSHOT</version>
+    <version>3.0.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>pagerduty-client</name>
