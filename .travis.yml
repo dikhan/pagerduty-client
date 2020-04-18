@@ -31,14 +31,25 @@ install:
   - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - export TRAVIS_COMMIT_DESCRIPTION=`git log -n 1`
 
-script:
-  # The below should be placed in the after_success stage but due to the nature on how travis deals with after_script
-  # exit codes different than 0 would not affect the build result which is not the expectation in this case.
-  - mvn test -P !build-extras -B  || travis_terminate 1;
-  - chmod +x ./travis-ci/before-deploy.sh ./travis-ci/deploy.sh ./travis-ci/cleanup.sh || travis_terminate 1;
-  - ./travis-ci/before-deploy.sh;
-  - ./travis-ci/deploy.sh;
-  - ./travis-ci/cleanup.sh;
+jobs:
+  include:
+    - stage: test
+      script:
+        - mvn test -P !build-extras -B  || travis_terminate 1;
+    - stage: deploy
+      script:
+        # The below should be placed in the after_success stage but due to the nature on how travis deals with after_script
+        # exit codes different than 0 would not affect the build result which is not the expectation in this case.
+        # Set up git user name and tag this commit
+        - chmod +x ./travis-ci/before-deploy.sh ./travis-ci/deploy.sh ./travis-ci/cleanup.sh || travis_terminate 1;
+        - ./travis-ci/before-deploy.sh;
+        - ./travis-ci/deploy.sh;
+        - ./travis-ci/cleanup.sh;
+stages:
+  - name: test
+    if: type = pull_request OR (type = push AND branch = master)
+  - name: deploy
+    if: type = push AND branch = master
 
 cache:
   directories:
