@@ -20,6 +20,7 @@ import static org.mockserver.model.StringBody.exact;
 public class MockServerUtils {
 
     private static final String EVENT_END_POINT = "/v2/enqueue";
+    private static final int SC_RATE_LIMIT = 429;
 
     /**
      * Prepare the mock server to receive the given incident and reply with a successful eventResult
@@ -66,6 +67,28 @@ public class MockServerUtils {
     public static void prepareMockServerWithUnexpectedErrorResponse(MockServerClient mockServerClient, Incident incident) throws JsonProcessingException {
         String noContentResponseBody = "{}";
         prepareMockServer(mockServerClient, incident, HttpStatus.SC_FORBIDDEN, noContentResponseBody);
+    }
+
+    /**
+     * Prepare the mock server to receive the given incident and reply with a predefined internal server error (500) response with no content
+     * @param mockServerClient mock client to configure the incident/event upon
+     * @param incident expected to be received in the mock server from the client
+     * @throws JsonProcessingException
+     */
+    public static void prepareMockServerWithInternalServerErrorResponse(MockServerClient mockServerClient, Incident incident) throws JsonProcessingException {
+        String noContentResponseBody = "{}";
+        prepareMockServer(mockServerClient, incident, HttpStatus.SC_INTERNAL_SERVER_ERROR, noContentResponseBody);
+    }
+
+    /**
+     * Prepare the mock server to receive the given incident and reply with a predefined internal server error (500) response with no content
+     * @param mockServerClient mock client to configure the incident/event upon
+     * @param incident expected to be received in the mock server from the client
+     * @throws JsonProcessingException
+     */
+    public static void prepareMockServerWithRateLimitResponse(MockServerClient mockServerClient, Incident incident) throws JsonProcessingException {
+        String noContentResponseBody = "{}";
+        prepareMockServer(mockServerClient, incident, SC_RATE_LIMIT, noContentResponseBody);
     }
 
     private static void prepareMockServer(MockServerClient mockServerClient, Incident incident, int statusCode, String responseBody) throws JsonProcessingException {
