@@ -12,22 +12,28 @@ public class ApiServiceFactory {
     private final String eventApi;
     private final String proxyHost;
     private final Integer proxyPort;
+    private final Boolean doRetries;
 
     public ApiServiceFactory(String eventApi) {
-        this(eventApi, null, null);
+        this(eventApi, null, null, false);
     }
 
     public ApiServiceFactory(String eventApi, String proxyHost, Integer proxyPort) {
+        this(eventApi, proxyHost, proxyPort, false);
+    }
+
+    public ApiServiceFactory(String eventApi, String proxyHost, Integer proxyPort, Boolean doRetries) {
         this.eventApi = eventApi;
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
+        this.doRetries = doRetries;
     }
 
     public ApiService getDefault() {
         if (!StringUtils.isEmpty(proxyHost) && proxyPort!= null) {
-            return new HttpApiServiceImpl(eventApi, proxyHost, proxyPort);
+            return new HttpApiServiceImpl(eventApi, proxyHost, proxyPort, doRetries);
         }
-        return new HttpApiServiceImpl(eventApi);
+        return new HttpApiServiceImpl(eventApi, false);
     }
 
 }

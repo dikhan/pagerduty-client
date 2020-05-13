@@ -13,23 +13,40 @@ public class ApiServiceFactoryTest {
         ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi);
 
         ApiService apiService = apiServiceFactory.getDefault();
-        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi);
+        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, false);
         assertThat(apiService).isExactlyInstanceOf(HttpApiServiceImpl.class);
         assertThat(apiService).isEqualTo(httpApiService);
     }
 
     @Test
-    public void apiServiceFactoryWithProxyParamsProducesRightDefaultApiServiceImpl() {
+    public void apiServiceFactoryWithProxyParamsProducesRightDefaultApiServiceImplWithRetries() {
         String eventApi = "eventApi";
         String proxyHost = "localhost";
         Integer proxyPort = 8080;
-        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, proxyHost, proxyPort);
+        boolean doRetries = true;
+        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, proxyHost, proxyPort, doRetries);
 
         ApiService apiService = apiServiceFactory.getDefault();
-        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, proxyHost, proxyPort);
+        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, proxyHost, proxyPort, doRetries);
         assertThat(apiService).isExactlyInstanceOf(HttpApiServiceImpl.class);
         assertThat(apiService).isEqualTo(httpApiService);
-        // reset uni rest settings
+        // reset unirest settings
+        Unirest.setProxy(null);
+    }
+
+    @Test
+    public void apiServiceFactoryWithProxyParamsProducesRightDefaultApiServiceImplWithoutRetries() {
+        String eventApi = "eventApi";
+        String proxyHost = "localhost";
+        Integer proxyPort = 8080;
+        boolean doRetries = false;
+        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, proxyHost, proxyPort, false);
+
+        ApiService apiService = apiServiceFactory.getDefault();
+        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, proxyHost, proxyPort, false);
+        assertThat(apiService).isExactlyInstanceOf(HttpApiServiceImpl.class);
+        assertThat(apiService).isEqualTo(httpApiService);
+        // reset unirest settings
         Unirest.setProxy(null);
     }
 }

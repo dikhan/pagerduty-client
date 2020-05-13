@@ -21,7 +21,8 @@ public class PagerDutyEventsClient {
         String eventApi = pagerDutyClientBuilder.getEventApi();
         String proxyHost = pagerDutyClientBuilder.getProxyHost();
         Integer proxyPort = pagerDutyClientBuilder.getProxyPort();
-        this.httpApiServiceImpl = new ApiServiceFactory(eventApi, proxyHost, proxyPort).getDefault();
+        boolean doRetries = pagerDutyClientBuilder.getDoRetries();
+        this.httpApiServiceImpl = new ApiServiceFactory(eventApi, proxyHost, proxyPort, doRetries).getDefault();
     }
 
     public static void main(String[] args) throws NotifyEventException {
@@ -80,18 +81,43 @@ public class PagerDutyEventsClient {
      * @see <a href="https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-">What is the difference between PagerDuty APIs?</a>
      */
     public static PagerDutyEventsClient create() {
-        return new PagerDutyClientBuilder().build();
+        return create(false);
     }
 
     /**
-     * Simple helper method to newBuilder a PagerDuty client with specific event api definition.
+     * Helper method to newBuilder a PagerDuty Events Client that allows for failing requests to be retried. Note that an ApiAccess key is not needed in order to make
+     * requests to PagerDuty Events API, only integration keys are needed (specified in the Incidents) which target the
+     * service where the incident will be created.
+     * For more information about the difference between PagerDuty APIs (REST API vs Events API) refer
+     * to:
+     *
+     * @return PagerDuty client which allows interaction with the service via PagerDuty Events API
+     * @see <a href="https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-">What is the difference between PagerDuty APIs?</a>
+     */
+    public static PagerDutyEventsClient create(boolean doRetries) {
+        return new PagerDutyClientBuilder().withDoRetries(doRetries).build();
+    }
+
+    /**
+     * Simple helper method to newBuilder a PagerDuty client with a specific event api definition.
      *
      * @param eventApi Url of the end point to post notifications. This method should only be used for testing purposes as
      *                 event should always be sent to events.pagerduty.com
      * @return PagerDuty client which allows interaction with the service via API calls
      */
     public static PagerDutyEventsClient create(String eventApi) {
-        return new PagerDutyClientBuilder().withEventApi(eventApi).build();
+        return create(eventApi, false);
+    }
+
+    /**
+     * Simple helper method to newBuilder a PagerDuty client with specific event api definition and allows for failing requests to be retried.
+     *
+     * @param eventApi Url of the end point to post notifications. This method should only be used for testing purposes as
+     *                 event should always be sent to events.pagerduty.com
+     * @return PagerDuty client which allows interaction with the service via API calls
+     */
+    public static PagerDutyEventsClient create(String eventApi, boolean doRetries) {
+        return new PagerDutyClientBuilder().withEventApi(eventApi).withDoRetries(doRetries).build();
     }
 
     /**
@@ -102,8 +128,20 @@ public class PagerDutyEventsClient {
      * @return PagerDuty client which allows interaction with the service via API calls
      */
     public static PagerDutyEventsClient create(String proxyHost, Integer proxyPort) {
-        return new PagerDutyClientBuilder().withProxyHost(proxyHost).withProxyPort(proxyPort).build();
+        return create(proxyHost, proxyPort, false);
     }
+
+    /**
+     * Simple helper method to newBuilder a PagerDuty client with specific proxy configuration and allows for failing requests to be retried.
+     *
+     * @param proxyHost Host of the configured proxy used by the PagerDuty client
+     * @param proxyPort Port of the configured proxy used by the PagerDuty client
+     * @return PagerDuty client which allows interaction with the service via API calls
+     */
+    public static PagerDutyEventsClient create(String proxyHost, Integer proxyPort, boolean doRetries) {
+        return new PagerDutyClientBuilder().withProxyHost(proxyHost).withProxyPort(proxyPort).withDoRetries(doRetries).build();
+    }
+
 
     public EventResult trigger(TriggerIncident incident) throws NotifyEventException {
         EventResult eventResult = sendEvent(incident);
@@ -135,6 +173,8 @@ public class PagerDutyEventsClient {
         private String proxyHost;
         private Integer proxyPort;
 
+        private Boolean doRetries = false;
+
         public PagerDutyClientBuilder() {
         }
 
@@ -150,6 +190,12 @@ public class PagerDutyEventsClient {
 
         public PagerDutyClientBuilder withProxyPort(Integer proxyPort) {
             this.proxyPort = proxyPort;
+            return this;
+        }
+
+
+        public PagerDutyClientBuilder withDoRetries(boolean doRetries) {
+            this.doRetries = doRetries;
             return this;
         }
 
@@ -170,6 +216,10 @@ public class PagerDutyEventsClient {
 
         public Integer getProxyPort() {
             return proxyPort;
+        }
+
+        public Boolean getDoRetries() {
+            return doRetries;
         }
     }
 }

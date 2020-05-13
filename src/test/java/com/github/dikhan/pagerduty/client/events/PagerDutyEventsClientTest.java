@@ -7,6 +7,8 @@ import com.github.dikhan.pagerduty.client.events.domain.TriggerIncident;
 import com.github.dikhan.pagerduty.client.events.utils.EventHelper;
 import com.github.dikhan.pagerduty.client.events.utils.MockServerUtils;
 import com.github.dikhan.pagerduty.client.events.utils.IncidentHelper;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +38,11 @@ public class PagerDutyEventsClientTest {
     @Before
     public void setUp() {
         pagerDutyEventsClient = PagerDutyEventsClient.create(EVENT_API);
+    }
+
+    @After
+    public void afterEach() {
+        mockServerClient.reset();
     }
 
     @Test
