@@ -273,7 +273,7 @@ public class Payload {
         int result = summary != null ? summary.hashCode() : 0;
         result = 31 * result + (source != null ? source.hashCode() : 0);
         result = 31 * result + (severity != null ? severity.hashCode() : 0);
-        result = 31 * result + (timestamp != null ? severity.hashCode() : 0);
+        result = 31 * result + (timestamp != null ? timestamp.hashCode() : 0);
         result = 31 * result + (component != null ? component.hashCode() : 0);
         result = 31 * result + (group != null ? group.hashCode() : 0);
         result = 31 * result + (eventClass != null ? eventClass.hashCode() : 0);
