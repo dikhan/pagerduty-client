@@ -108,7 +108,7 @@ public class HttpApiServiceImpl implements ApiService {
             return EventResult.errorEvent(String.valueOf(responseStatus), "", IOUtils.toString(jsonResponse.getRawBody()));
         }
 
-        log.debug("Received a {} response. Will retry again. ({}/{})", RATE_LIMIT_STATUS_CODE, retryCount, maxRetries);
+        log.debug("Received a {} response. Will retry again. ({}/{})", responseStatus, retryCount, maxRetries);
 
         try {
             Thread.sleep(retryDelays[retryCount]);
