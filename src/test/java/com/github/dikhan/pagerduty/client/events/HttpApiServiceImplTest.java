@@ -1,5 +1,6 @@
 package com.github.dikhan.pagerduty.client.events;
 
+import com.github.dikhan.pagerduty.client.events.domain.ChangeEvent;
 import com.github.dikhan.pagerduty.client.events.domain.EventResult;
 import com.github.dikhan.pagerduty.client.events.domain.Incident;
 import com.github.dikhan.pagerduty.client.events.utils.EventHelper;
@@ -15,6 +16,7 @@ import org.mockserver.junit.MockServerRule;
 import java.net.UnknownHostException;
 
 import static com.github.dikhan.pagerduty.client.events.utils.IncidentHelper.prepareSampleTriggerIncident;
+import static com.github.dikhan.pagerduty.client.events.utils.ChangeEventHelper.prepareSampleChangeEvent;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HttpApiServiceImplTest {
@@ -29,13 +31,16 @@ public class HttpApiServiceImplTest {
     private final String EVENT_END_POINT = "/v2/enqueue";
     private final String EVENT_API = "http://" + MOCK_PAGER_DUTY_HOSTNAME + ":" + MOCK_PAGER_DUTY_PORT + "/" + EVENT_END_POINT;
 
+    private final String CHANGE_EVENT_END_POINT = "/v2/change/enqueue";
+    private final String CHANGE_EVENT_API = "http://" + MOCK_PAGER_DUTY_HOSTNAME + ":" + MOCK_PAGER_DUTY_PORT + "/" + CHANGE_EVENT_END_POINT;
+
     private HttpApiServiceImpl httpApiServiceImpl;
     private HttpApiServiceImpl httpApiServiceImplWithRetriesEnabled;
 
     @Before
     public void setUp() throws UnknownHostException {
-        httpApiServiceImpl = new HttpApiServiceImpl(EVENT_API, false);
-        httpApiServiceImplWithRetriesEnabled = new HttpApiServiceImpl(EVENT_API, true);
+        httpApiServiceImpl = new HttpApiServiceImpl(EVENT_API, CHANGE_EVENT_API, false);
+        httpApiServiceImplWithRetriesEnabled = new HttpApiServiceImpl(EVENT_API, CHANGE_EVENT_API, true);
     }
 
     @After
@@ -48,7 +53,7 @@ public class HttpApiServiceImplTest {
         String dedupKey = "DEDUP_KEY";
         Incident incident = prepareSampleTriggerIncident("SERVICE_KEY");
         MockServerUtils
-                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
+                .prepareMockServerToReceiveGivenEventAndReplyWithSuccessfulResponse(mockServerClient, incident,
                         EventHelper.successEvent(dedupKey));
 
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
@@ -62,7 +67,7 @@ public class HttpApiServiceImplTest {
         String dedupKey = "DEDUP_KEY";
         Incident incident = prepareSampleTriggerIncident("SERVICE_KEY");
         MockServerUtils
-                .prepareMockServerToReceiveGivenIncidentAndReplyWithAcceptedResponse(mockServerClient, incident,
+                .prepareMockServerToReceiveGivenEventAndReplyWithAcceptedResponse(mockServerClient, incident,
                         EventHelper.successEvent(dedupKey));
 
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
@@ -74,7 +79,7 @@ public class HttpApiServiceImplTest {
     @Test
     public void notifyIncidentEventAndErrorResponseFromUpstreamServer() throws Exception {
         Incident incident = prepareSampleTriggerIncident("SERVICE_KEY");
-        MockServerUtils.prepareMockServerToReceiveIncidentAndReplyWithWithErrorResponse(mockServerClient, incident,
+        MockServerUtils.prepareMockServerToReceiveEventAndReplyWithWithErrorResponse(mockServerClient, incident,
                 EventHelper.errorEvent());
 
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
@@ -132,7 +137,7 @@ public class HttpApiServiceImplTest {
         MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, incident);
         MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, incident);
         MockServerUtils
-                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
+                .prepareMockServerToReceiveGivenEventAndReplyWithSuccessfulResponse(mockServerClient, incident,
                         EventHelper.successEvent(dedupKey));
 
         EventResult eventResult = httpApiServiceImplWithRetriesEnabled.notifyEvent(incident);
@@ -177,7 +182,7 @@ public class HttpApiServiceImplTest {
         MockServerUtils.prepareMockServerWithRateLimitResponse(mockServerClient, incident);
         MockServerUtils.prepareMockServerWithRateLimitResponse(mockServerClient, incident);
         MockServerUtils
-                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
+                .prepareMockServerToReceiveGivenEventAndReplyWithSuccessfulResponse(mockServerClient, incident,
                         EventHelper.successEvent(dedupKey));
 
         EventResult eventResult = httpApiServiceImplWithRetriesEnabled.notifyEvent(incident);
@@ -187,4 +192,131 @@ public class HttpApiServiceImplTest {
 
     }
 
+    @Test
+    public void notifyChangeEventAndAcceptedResponseFromUpstreamServer() throws Exception {
+        ChangeEvent changeEvent = prepareSampleChangeEvent("SERVICE_KEY");
+        MockServerUtils
+                .prepareMockServerToReceiveGivenEventAndReplyWithAcceptedResponse(mockServerClient, changeEvent,
+                        EventHelper.successEvent());
+
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(changeEvent);
+        EventResult expectedResult = EventHelper.successEvent();
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void notifyChangeEventAndErrorResponseFromUpstreamServer() throws Exception {
+        ChangeEvent changeEvent = prepareSampleChangeEvent("SERVICE_KEY");
+        MockServerUtils.prepareMockServerToReceiveEventAndReplyWithWithErrorResponse(mockServerClient, changeEvent,
+                EventHelper.errorEvent());
+
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(changeEvent);
+        EventResult expectedResult = EventHelper.errorEvent();
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void notifyChangeEventAnUnexpectedErrorResponseFromUpstreamServer() throws Exception {
+        ChangeEvent changeEvent = prepareSampleChangeEvent("SERVICE_KEY");
+        MockServerUtils.prepareMockServerWithUnexpectedErrorResponse(mockServerClient, changeEvent);
+
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(changeEvent);
+        EventResult expectedResult = EventHelper.unexpectedErrorEvent();
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
+
+
+    @Test
+    public void notifyChangeEventAnServerInternalErrorResponseFromUpstreamServer() throws Exception {
+        ChangeEvent changeEvent = prepareSampleChangeEvent("SERVICE_KEY");
+        MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, changeEvent);
+
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(changeEvent);
+        EventResult expectedResult = EventHelper.internalServerErrorEvent();
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void notifyChangeEventAnServerInternalErrorResponseFromUpstreamServerWithRetries() throws Exception {
+        ChangeEvent changeEvent = prepareSampleChangeEvent("SERVICE_KEY");
+
+        // 1 initial request + 3 retries
+        MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, changeEvent);
+        MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, changeEvent);
+        MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, changeEvent);
+        MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, changeEvent);
+
+        EventResult eventResult = httpApiServiceImplWithRetriesEnabled.notifyEvent(changeEvent);
+        EventResult expectedResult = EventHelper.internalServerErrorEvent();
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void notifyChangeEventAnServerInternalErrorResponseFromUpstreamServerWithRetriesAndRecovery() throws Exception {
+        String dedupKey = "DEDUP_KEY";
+        ChangeEvent changeEvent = prepareSampleChangeEvent("SERVICE_KEY");
+
+        // 1 initial request + 2 retry + 1 success
+        MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, changeEvent);
+        MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, changeEvent);
+        MockServerUtils.prepareMockServerWithInternalServerErrorResponse(mockServerClient, changeEvent);
+        MockServerUtils
+                .prepareMockServerToReceiveGivenEventAndReplyWithSuccessfulResponse(mockServerClient, changeEvent,
+                        EventHelper.successEvent());
+
+        EventResult eventResult = httpApiServiceImplWithRetriesEnabled.notifyEvent(changeEvent);
+        EventResult expectedResult = EventHelper.successEvent();
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void notifyChangeEventAnServerRateLimitResponseFromUpstreamServer() throws Exception {
+        ChangeEvent changeEvent = prepareSampleChangeEvent("SERVICE_KEY");
+        MockServerUtils.prepareMockServerWithRateLimitResponse(mockServerClient, changeEvent);
+
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(changeEvent);
+        EventResult expectedResult = EventHelper.rateLimitErrorEvent();
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void notifyChangeEventAnServerRateLimitResponseFromUpstreamServerWithRetries() throws Exception {
+        ChangeEvent changeEvent = prepareSampleChangeEvent("SERVICE_KEY");
+
+        // 1 initial request + 3 retries
+        MockServerUtils.prepareMockServerWithRateLimitResponse(mockServerClient, changeEvent);
+        MockServerUtils.prepareMockServerWithRateLimitResponse(mockServerClient, changeEvent);
+        MockServerUtils.prepareMockServerWithRateLimitResponse(mockServerClient, changeEvent);
+        MockServerUtils.prepareMockServerWithRateLimitResponse(mockServerClient, changeEvent);
+
+        EventResult eventResult = httpApiServiceImplWithRetriesEnabled.notifyEvent(changeEvent);
+        EventResult expectedResult = EventHelper.rateLimitErrorEvent();
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void notifyChangeEventAnServerRateLimitResponseFromUpstreamServerWithRetriesWithRecovery() throws Exception {
+        String dedupKey = "DEDUP_KEY";
+        ChangeEvent changeEvent = prepareSampleChangeEvent("SERVICE_KEY");
+
+        // 1 initial request + 1 retry + 1 success
+        MockServerUtils.prepareMockServerWithRateLimitResponse(mockServerClient, changeEvent);
+        MockServerUtils.prepareMockServerWithRateLimitResponse(mockServerClient, changeEvent);
+        MockServerUtils
+                .prepareMockServerToReceiveGivenEventAndReplyWithSuccessfulResponse(mockServerClient, changeEvent,
+                        EventHelper.successEvent(dedupKey));
+
+        EventResult eventResult = httpApiServiceImplWithRetriesEnabled.notifyEvent(changeEvent);
+        EventResult expectedResult = EventHelper.successEvent(dedupKey);
+
+        assertThat(eventResult).isEqualTo(expectedResult);
+    }
 }

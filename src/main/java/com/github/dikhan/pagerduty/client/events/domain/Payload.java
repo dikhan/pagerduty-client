@@ -117,7 +117,7 @@ public class Payload {
 
         /**
          * @param summary A brief text summary of the event, used to generate the summaries/titles of any associated alerts.
-         * @return Payload Builder with timestamp field populated to be able to keep populating the instance
+         * @return Payload Builder with summary field populated to be able to keep populating the instance
          */
         public Builder setSummary(String summary) {
             this.summary = summary;
@@ -126,7 +126,7 @@ public class Payload {
 
         /**
          * @param source The unique location of the affected system, preferably a hostname or FQDN.
-         * @return Payload Builder with timestamp field populated to be able to keep populating the instance
+         * @return Payload Builder with source field populated to be able to keep populating the instance
          */
         public Builder setSource(String source) {
             this.source = source;
@@ -136,7 +136,7 @@ public class Payload {
         /**
          * @param severity The perceived severity of the status the event is describing with respect to the affected
          *                 system. This can be critical, error, warning or info.
-         * @return Payload Builder with timestamp field populated to be able to keep populating the instance
+         * @return Payload Builder with severity field populated to be able to keep populating the instance
          */
         public Builder setSeverity(Severity severity) {
             this.severity = severity;

@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.Builder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class Incident {
+public abstract class Incident implements PagerDutyEvent {
     @JsonProperty("routing_key")
     private final String routingKey;
     @JsonProperty("event_action")

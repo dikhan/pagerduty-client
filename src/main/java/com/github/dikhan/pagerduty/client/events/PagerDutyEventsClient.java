@@ -19,10 +19,11 @@ public class PagerDutyEventsClient {
 
     protected PagerDutyEventsClient(PagerDutyClientBuilder pagerDutyClientBuilder) {
         String eventApi = pagerDutyClientBuilder.getEventApi();
+        String changeEventApi = pagerDutyClientBuilder.getChangeEventApi();
         String proxyHost = pagerDutyClientBuilder.getProxyHost();
         Integer proxyPort = pagerDutyClientBuilder.getProxyPort();
         boolean doRetries = pagerDutyClientBuilder.getDoRetries();
-        this.httpApiServiceImpl = new ApiServiceFactory(eventApi, proxyHost, proxyPort, doRetries).getDefault();
+        this.httpApiServiceImpl = new ApiServiceFactory(eventApi, changeEventApi, proxyHost, proxyPort, doRetries).getDefault();
     }
 
     public static void main(String[] args) throws NotifyEventException {
@@ -68,6 +69,20 @@ public class PagerDutyEventsClient {
                 .newBuilder(routingKey, dedupKey)
                 .build();
         pagerDutyEventsClient.resolve(resolve);
+
+        ChangeEventPayload changeEventPayload = ChangeEventPayload.Builder.newBuilder()
+                .setSummary("This is an change event test to test PagerDutyEventsClient")
+                .setSource("testing host")
+                .setTimestamp(OffsetDateTime.now())
+                .setCustomDetails(customDetails)
+                .build();
+
+        ChangeEvent changeEvent = ChangeEvent.ChangeEventBuilder
+                .newBuilder(routingKey, changeEventPayload)
+                .setLinks(linkContextList)
+                .build();
+
+        pagerDutyEventsClient.trackChange(changeEvent);
     }
 
     /**
@@ -121,6 +136,32 @@ public class PagerDutyEventsClient {
     }
 
     /**
+     * Simple helper method to newBuilder a PagerDuty client with a specific event api and change event api definition.
+     *
+     * @param eventApi Url of the end point to post notifications. This method should only be used for testing purposes as
+     *                 event should always be sent to events.pagerduty.com
+     * @param changeEventApi Url of the end point to post change events. This method should only be used for testing purposes as
+     *                 event should always be sent to events.pagerduty.com
+     * @return PagerDuty client which allows interaction with the service via API calls
+     */
+    public static PagerDutyEventsClient create(String eventApi, String changeEventApi) {
+        return create(eventApi, changeEventApi, false);
+    }
+
+    /**
+     * Simple helper method to newBuilder a PagerDuty client with a specific event api and change event api definition.
+     *
+     * @param eventApi Url of the end point to post notifications. This method should only be used for testing purposes as
+     *                 event should always be sent to events.pagerduty.com
+     * @param changeEventApi Url of the end point to post change events. This method should only be used for testing purposes as
+     *                 event should always be sent to events.pagerduty.com
+     * @return PagerDuty client which allows interaction with the service via API calls
+     */
+    public static PagerDutyEventsClient create(String eventApi, String changeEventApi, boolean doRetries) {
+        return new PagerDutyClientBuilder().withEventApi(eventApi).withChangeEventApi(changeEventApi).withDoRetries(doRetries).build();
+    }
+
+    /**
      * Simple helper method to newBuilder a PagerDuty client with specific proxy configuration
      *
      * @param proxyHost Host of the configured proxy used by the PagerDuty client
@@ -158,9 +199,20 @@ public class PagerDutyEventsClient {
         return eventResult;
     }
 
+    public EventResult trackChange(ChangeEvent changeEvent) throws NotifyEventException {
+        EventResult eventResult = sendEvent(changeEvent);
+        return eventResult;
+    }
+
     private EventResult sendEvent(Incident incident) throws NotifyEventException {
         EventResult eventResult = httpApiServiceImpl.notifyEvent(incident);
         log.debug("Event result {} for {}", eventResult, incident);
+        return eventResult;
+    }
+
+    private EventResult sendEvent(ChangeEvent changeEvent) throws NotifyEventException {
+        EventResult eventResult = httpApiServiceImpl.notifyEvent(changeEvent);
+        log.debug("Event result {} for {}", eventResult, changeEvent);
         return eventResult;
     }
 
@@ -168,7 +220,10 @@ public class PagerDutyEventsClient {
 
         private static final String PAGER_DUTY_EVENT_API = "https://events.pagerduty.com/v2/enqueue";
 
+        private static final String PAGER_DUTY_CHANGE_EVENT_API = "https://events.pagerduty.com/v2/change/enqueue";
+
         private String eventApi;
+        private String changeEventApi;
 
         private String proxyHost;
         private Integer proxyPort;
@@ -180,6 +235,11 @@ public class PagerDutyEventsClient {
 
         public PagerDutyClientBuilder withEventApi(String eventApi) {
             this.eventApi = eventApi;
+            return this;
+        }
+
+        public PagerDutyClientBuilder withChangeEventApi(String changeEventApi) {
+            this.changeEventApi = changeEventApi;
             return this;
         }
 
@@ -203,11 +263,20 @@ public class PagerDutyEventsClient {
             if (StringUtils.isBlank(eventApi)) {
                 eventApi = PAGER_DUTY_EVENT_API;
             }
+
+            if (StringUtils.isBlank(changeEventApi)) {
+                changeEventApi = PAGER_DUTY_CHANGE_EVENT_API;
+            }
+
             return new PagerDutyEventsClient(this);
         }
 
         public String getEventApi() {
             return eventApi;
+        }
+
+        public String getChangeEventApi() {
+            return changeEventApi;
         }
 
         public String getProxyHost() {
