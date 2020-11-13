@@ -1,9 +1,11 @@
 package com.github.dikhan.pagerduty.client.events;
 
 import com.github.dikhan.pagerduty.client.events.domain.AcknowledgeIncident;
+import com.github.dikhan.pagerduty.client.events.domain.ChangeEvent;
 import com.github.dikhan.pagerduty.client.events.domain.EventResult;
 import com.github.dikhan.pagerduty.client.events.domain.ResolveIncident;
 import com.github.dikhan.pagerduty.client.events.domain.TriggerIncident;
+import com.github.dikhan.pagerduty.client.events.utils.ChangeEventHelper;
 import com.github.dikhan.pagerduty.client.events.utils.EventHelper;
 import com.github.dikhan.pagerduty.client.events.utils.MockServerUtils;
 import com.github.dikhan.pagerduty.client.events.utils.IncidentHelper;
@@ -29,6 +31,8 @@ public class PagerDutyEventsClientTest {
     private final String EVENT_END_POINT = "/v2/enqueue";
     private final String EVENT_API = "http://" + MOCK_PAGER_DUTY_HOSTNAME + ":" + MOCK_PAGER_DUTY_PORT + "/" + EVENT_END_POINT;
 
+    private final String CHANGE_END_POINT = "/v2/change/enqueue";
+    private final String CHANGE_EVENT_API = "http://" + MOCK_PAGER_DUTY_HOSTNAME + ":" + MOCK_PAGER_DUTY_PORT + "/" + CHANGE_END_POINT;
 
     private final String ROUTING_KEY = "ROUTING_KEY";
     private final String DEDUP_KEY = "DEDUP_KEY";
@@ -37,7 +41,7 @@ public class PagerDutyEventsClientTest {
 
     @Before
     public void setUp() {
-        pagerDutyEventsClient = PagerDutyEventsClient.create(EVENT_API);
+        pagerDutyEventsClient = PagerDutyEventsClient.create(EVENT_API, CHANGE_EVENT_API);
     }
 
     @After
@@ -49,7 +53,7 @@ public class PagerDutyEventsClientTest {
     public void triggerAlert() throws Exception {
         TriggerIncident incident = IncidentHelper.prepareSampleTriggerIncident(ROUTING_KEY);
         MockServerUtils
-                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, incident,
+                .prepareMockServerToReceiveGivenEventAndReplyWithSuccessfulResponse(mockServerClient, incident,
                         EventHelper.successEvent(DEDUP_KEY));
 
         EventResult eventResult = pagerDutyEventsClient.trigger(incident);
@@ -61,7 +65,7 @@ public class PagerDutyEventsClientTest {
     public void acknowledgeAlert() throws Exception {
         AcknowledgeIncident ack = IncidentHelper.prepareSampleAcknowledgementIncident(ROUTING_KEY, DEDUP_KEY);
         MockServerUtils
-                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, ack,
+                .prepareMockServerToReceiveGivenEventAndReplyWithSuccessfulResponse(mockServerClient, ack,
                         EventHelper.successEvent(DEDUP_KEY));
 
         EventResult eventResult = pagerDutyEventsClient.acknowledge(ack);
@@ -73,7 +77,7 @@ public class PagerDutyEventsClientTest {
     public void resolveAlert() throws Exception {
         ResolveIncident resolveIncident = IncidentHelper.prepareSampleResolveIncident(ROUTING_KEY, DEDUP_KEY);
         MockServerUtils
-                .prepareMockServerToReceiveGivenIncidentAndReplyWithSuccessfulResponse(mockServerClient, resolveIncident,
+                .prepareMockServerToReceiveGivenEventAndReplyWithSuccessfulResponse(mockServerClient, resolveIncident,
                         EventHelper.successEvent(DEDUP_KEY));
 
         EventResult eventResult = pagerDutyEventsClient.resolve(resolveIncident);
@@ -81,4 +85,15 @@ public class PagerDutyEventsClientTest {
         assertThat(eventResult).isEqualTo(expectedEventResult);
     }
 
+    @Test
+    public void trackChange() throws Exception {
+        ChangeEvent changeEvent = ChangeEventHelper.prepareSampleChangeEvent(ROUTING_KEY);
+        MockServerUtils
+                .prepareMockServerToReceiveGivenEventAndReplyWithSuccessfulResponse(mockServerClient, changeEvent,
+                        EventHelper.successEvent());
+
+        EventResult eventResult = pagerDutyEventsClient.trackChange(changeEvent);
+        EventResult expectedEventResult = EventHelper.successEvent();
+        assertThat(eventResult).isEqualTo(expectedEventResult);
+    }
 }

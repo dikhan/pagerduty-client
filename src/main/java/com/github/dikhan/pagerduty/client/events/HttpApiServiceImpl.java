@@ -1,7 +1,8 @@
 package com.github.dikhan.pagerduty.client.events;
 
+import com.github.dikhan.pagerduty.client.events.domain.ChangeEvent;
 import com.github.dikhan.pagerduty.client.events.domain.EventResult;
-import com.github.dikhan.pagerduty.client.events.domain.Incident;
+import com.github.dikhan.pagerduty.client.events.domain.PagerDutyEvent;
 import com.github.dikhan.pagerduty.client.events.exceptions.NotifyEventException;
 import com.github.dikhan.pagerduty.client.events.utils.JsonUtils;
 import com.mashape.unirest.http.HttpResponse;
@@ -36,16 +37,19 @@ public class HttpApiServiceImpl implements ApiService {
     }
 
     private final String eventApi;
+    private final String changeEventApi;
     private final boolean doRetries;
 
-    public HttpApiServiceImpl(String eventApi, boolean doRetries) {
+    public HttpApiServiceImpl(String eventApi, String changeEventApi, boolean doRetries) {
         this.eventApi = eventApi;
+        this.changeEventApi = changeEventApi;
         this.doRetries = doRetries;
         initUnirest();
     }
 
-    public HttpApiServiceImpl(String eventApi, String proxyHost, Integer proxyPort, boolean doRetries) {
+    public HttpApiServiceImpl(String eventApi, String changeEventApi, String proxyHost, Integer proxyPort, boolean doRetries) {
         this.eventApi = eventApi;
+        this.changeEventApi = changeEventApi;
         this.doRetries = doRetries;
         initUnirestWithProxy(proxyHost, proxyPort);
     }
@@ -59,15 +63,19 @@ public class HttpApiServiceImpl implements ApiService {
         Unirest.setProxy(new HttpHost(proxyHost, proxyPort));
     }
 
-    public EventResult notifyEvent(Incident incident) throws NotifyEventException {
-        return notifyEvent(incident, 0);
+    public EventResult notifyEvent(PagerDutyEvent event) throws NotifyEventException {
+        if (event instanceof ChangeEvent) {
+            return notifyEvent(event, changeEventApi, 0);
+        }
+        return notifyEvent(event, eventApi, 0);
     }
 
-    private EventResult notifyEvent(Incident incident, int retryCount) throws NotifyEventException {
+    private EventResult notifyEvent(PagerDutyEvent event, String api, int retryCount) throws NotifyEventException {
         try {
-            HttpRequestWithBody request = Unirest.post(eventApi)
+            HttpRequestWithBody request = Unirest.post(api)
+                    .header("Content-Type", "application/json")
                     .header("Accept", "application/json");
-            request.body(incident);
+            request.body(event);
             HttpResponse<JsonNode> jsonResponse = request.asJson();
 
             if (log.isDebugEnabled()) {
@@ -87,7 +95,7 @@ public class HttpApiServiceImpl implements ApiService {
                 case RATE_LIMIT_STATUS_CODE:
                 case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                     if (doRetries) {
-                        return handleRetries(incident, retryCount, jsonResponse, responseStatus);
+                        return handleRetries(event, api, retryCount, jsonResponse, responseStatus);
                     } else {
                         return EventResult.errorEvent(String.valueOf(responseStatus), "", IOUtils.toString(jsonResponse.getRawBody()));
                     }
@@ -99,7 +107,7 @@ public class HttpApiServiceImpl implements ApiService {
         }
     }
 
-    private EventResult handleRetries(Incident incident, int retryCount, HttpResponse<JsonNode> jsonResponse, int responseStatus) throws IOException, NotifyEventException {
+    private EventResult handleRetries(PagerDutyEvent event, String api, int retryCount, HttpResponse<JsonNode> jsonResponse, int responseStatus) throws IOException, NotifyEventException {
         long[] retryDelays = RETRY_WAIT_TIME_MILLISECONDS.get(responseStatus);
 
         int maxRetries = retryDelays.length;
@@ -117,7 +125,7 @@ public class HttpApiServiceImpl implements ApiService {
             Thread.currentThread().interrupt();
         }
 
-        return notifyEvent(incident, retryCount + 1);
+        return notifyEvent(event, api, retryCount + 1);
     }
 
     @Override
@@ -131,11 +139,11 @@ public class HttpApiServiceImpl implements ApiService {
 
         HttpApiServiceImpl that = (HttpApiServiceImpl) o;
 
-        return doRetries == that.doRetries && Objects.equals(eventApi, that.eventApi);
+        return doRetries == that.doRetries && Objects.equals(eventApi, that.eventApi) && Objects.equals(changeEventApi, that.changeEventApi);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(eventApi, doRetries);
+        return Objects.hash(eventApi, changeEventApi, doRetries);
     }
 }

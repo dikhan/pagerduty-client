@@ -10,10 +10,11 @@ public class ApiServiceFactoryTest {
     @Test
     public void apiServiceFactoryProducesRightDefaultApiServiceImpl() {
         String eventApi = "eventApi";
-        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi);
+        String changeEventApi = "changeEventApi";
+        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, changeEventApi);
 
         ApiService apiService = apiServiceFactory.getDefault();
-        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, false);
+        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, changeEventApi, false);
         assertThat(apiService).isExactlyInstanceOf(HttpApiServiceImpl.class);
         assertThat(apiService).isEqualTo(httpApiService);
     }
@@ -21,13 +22,14 @@ public class ApiServiceFactoryTest {
     @Test
     public void apiServiceFactoryWithProxyParamsProducesRightDefaultApiServiceImplWithRetries() {
         String eventApi = "eventApi";
+        String changeEventApi = "changeEventApi";
         String proxyHost = "localhost";
         Integer proxyPort = 8080;
         boolean doRetries = true;
-        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, proxyHost, proxyPort, doRetries);
+        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, changeEventApi, proxyHost, proxyPort, doRetries);
 
         ApiService apiService = apiServiceFactory.getDefault();
-        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, proxyHost, proxyPort, doRetries);
+        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, changeEventApi, proxyHost, proxyPort, doRetries);
         assertThat(apiService).isExactlyInstanceOf(HttpApiServiceImpl.class);
         assertThat(apiService).isEqualTo(httpApiService);
         // reset unirest settings
@@ -37,13 +39,14 @@ public class ApiServiceFactoryTest {
     @Test
     public void apiServiceFactoryWithProxyParamsProducesRightDefaultApiServiceImplWithoutRetries() {
         String eventApi = "eventApi";
+        String changeEventApi = "changeEventApi";
         String proxyHost = "localhost";
         Integer proxyPort = 8080;
         boolean doRetries = false;
-        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, proxyHost, proxyPort, false);
+        ApiServiceFactory apiServiceFactory = new ApiServiceFactory(eventApi, changeEventApi, proxyHost, proxyPort, false);
 
         ApiService apiService = apiServiceFactory.getDefault();
-        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, proxyHost, proxyPort, false);
+        HttpApiServiceImpl httpApiService = new HttpApiServiceImpl(eventApi, changeEventApi, proxyHost, proxyPort, false);
         assertThat(apiService).isExactlyInstanceOf(HttpApiServiceImpl.class);
         assertThat(apiService).isEqualTo(httpApiService);
         // reset unirest settings
