@@ -3,9 +3,8 @@
 ![][pagerduty-client-logo]
 
 PagerDuty Events Client aims to provide a full-fledged Java client which is easy to use and integrates seamlessly
-with PagerDuty Events API v2. Note that the library does not integrate with PagerDuty REST Api - it is only meant
-for PagerDuty Events API v2. Please refer to the following link to see the differences between PagerDuty REST API and
-Events API:
+with [PagerDuty Events API v2](https://developer.pagerduty.com/docs/events-api-v2/overview/). Note that the library does not integrate 
+with PagerDuty REST Api - it is only meant for PagerDuty Events API v2. Please refer to the following link to see the differences between PagerDuty REST API and Events API:
 
 [What is the difference between PagerDuty APIs?](https://support.pagerduty.com/hc/en-us/articles/214794907-What-is-the-difference-between-PagerDuty-APIs-)
 [PagerDuty APIs: Events API and REST API](https://support.pagerduty.com/hc/en-us/articles/214794907-PagerDuty-APIs-Events-API-and-REST-API)
@@ -28,11 +27,20 @@ An example on how to create the clients is as follows:
 PagerDutyEventsClient pagerDutyEventsClient = PagerDutyEventsClient.create();
 ```
 
-The library supports the creation of three different type of incidents. For your reference, below are examples
-on how to create each incident type as well as how to use PagerDutyEventsClient to perform the according operation:
+The library supports the creation of Alert and Change type events. For your reference, below are examples
+on how to create each incident type as well as how to use PagerDutyEventsClient to perform the according operation.
+
+
+## Alert events
+
+[Alert type events](https://developer.pagerduty.com/docs/events-api-v2/trigger-events/) are used to notify a problem in a 
+machine monitored system using the trigger event. Follow up events can be sent to acknowledge or resolve an existing alert. 
+
+Examples of these alerts may include high error rate, CPU usage exceeded limit, deployment failed, etc.
 
 ### Trigger:
-This will send a new 'trigger' incident to PagerDuty containing the details specified in the IncidentBuilder.
+
+This will send a new 'trigger' incident to PagerDuty's [Alert Events Endpoint](https://developer.pagerduty.com/docs/events-api-v2/trigger-events/) containing the details specified in the IncidentBuilder.
 A helper IncidentBuilder is provided for the sake of simplicity to ease with the creation of trigger incidents. The
 trigger event requires two mandatory parameters:
   - **routingKey**: The GUID of one of your "Generic API" services. This is the "Integration Key" listed on a Generic
@@ -44,6 +52,7 @@ More details can be provided to the incident as previously mentioned by calling 
 IncidentBuilder.
    
 #### Payload:
+
 The PagerDuty Events API v2 requires that every incident to contain a payload structure, though payload is only 
 supported for trigger incident.  The Payload can be created similar to other trigger using a builder.
 Below contains a list of mandatory fields to build a payload instance.  
@@ -69,6 +78,7 @@ pagerDutyEventsClient.trigger(incident);
 ```
 
 ### Acknowledge:
+
 This will send a new acknowledge incident to PagerDuty based upon the 'routingKey' and 'dedupKey'
 provided. Please note that PagerDuty does not support payload added to the acknowledge event, so by default,
 filler context will be used to popular the payload instance.
@@ -80,6 +90,7 @@ pagerDutyEventsClient.acknowledge(ack);
 ```
 
 ### Resolve:
+
 This will send a new resolve incident to PagerDuty based upon the 'service_key' and 'dedup_key'
 provided. Payload is also not supported by resolve incident.
 ```
@@ -88,6 +99,31 @@ ResolveIncident resolve = ResolveIncident.ResolveIncidentBuilder
         .build();
 pagerDutyEventsClient.resolve(resolve);
 ```
+
+## Change events
+
+[Change type events](https://developer.pagerduty.com/docs/events-api-v2/send-change-events/) are used to notify a change in a system that does not represent a problem. 
+
+Examples may include a pull request merged, secret successfully rotated, configuration update applied, etc.
+
+### Track:
+
+This will send a change event to PagerDuty's [Change Events Endpoint](https://developer.pagerduty.com/docs/events-api-v2/send-change-events/) and
+associate it with the corresponding service based on the `"ROUTING_KEY"` provided and including the information specified in the change event payload.
+
+````
+ChangeEventPayload changeEventPayload = ChangeEventPayload.Builder.
+        newBuilder()
+        .setSummary("Pull request merged")
+        .setTimestamp(OffsetDateTime.now())
+        .setCustomDetails(new JSONObject("{\"build_state\":\"passed\",\"build_number\":\"2\",\"run_time\":\"1236s\"}"))
+        .build();
+
+ChangeEvent changeEvent = ChangeEvent.ChangeEventBuilder
+        .newBuilder("ROUTING_KEY", changeEventPayload)
+        .build();
+pagerDutyEventsClient.trackChange(changeEvent);
+````
 
 ## Integration:
 
