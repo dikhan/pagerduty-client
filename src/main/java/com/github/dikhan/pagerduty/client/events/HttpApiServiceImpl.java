@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import com.github.dikhan.pagerduty.client.events.domain.ChangeEvent;
 import com.github.dikhan.pagerduty.client.events.domain.EventResult;
 import com.github.dikhan.pagerduty.client.events.domain.PagerDutyEvent;
 import com.github.dikhan.pagerduty.client.events.exceptions.NotifyEventException;
+import com.github.dikhan.pagerduty.client.events.utils.JsonUtils;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -89,10 +91,20 @@ public class HttpApiServiceImpl implements ApiService {
             case HttpStatus.SC_OK:
             case HttpStatus.SC_CREATED:
             case HttpStatus.SC_ACCEPTED:
-               JSONObject jsonObject = new JSONObject(httpResponse.getBody());
-               return EventResult.successEvent(jsonObject.getString("status"), jsonObject.getString("message"), jsonObject.getString("dedup_key"));
+               JSONObject jsonBody = new JSONObject(httpResponse.getBody());
+               return EventResult.successEvent(JsonUtils.getPropertyValue(jsonBody, "status"),
+                                               JsonUtils.getPropertyValue(jsonBody, "message"),
+                                               JsonUtils.getPropertyValue(jsonBody, "dedup_key"));
             case HttpStatus.SC_BAD_REQUEST:
-               return EventResult.errorEvent(httpResponse.getStatusText(), httpResponse.getBody(), IOUtils.toString(httpResponse.getRawBody()));
+               try {
+                  jsonBody = new JSONObject(httpResponse.getBody());
+                  return EventResult.errorEvent(JsonUtils.getPropertyValue(jsonBody, "status"),
+                                                JsonUtils.getPropertyValue(jsonBody, "message"), JsonUtils.getArrayValue(jsonBody, "errors"));
+               } catch (JSONException e) {
+                  // No Json payload returned
+                  return EventResult.errorEvent(httpResponse.getStatusText(), httpResponse.getBody(), IOUtils.toString(httpResponse.getRawBody()));
+                  //                 return EventResult.errorEvent(String.valueOf(responseStatus), "", IOUtils.toString(httpResponse.getRawBody()));
+               }
             case RATE_LIMIT_STATUS_CODE:
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                if (doRetries) {
