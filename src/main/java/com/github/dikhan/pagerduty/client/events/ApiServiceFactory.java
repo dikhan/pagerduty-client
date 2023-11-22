@@ -35,7 +35,7 @@ public class ApiServiceFactory {
         if (!StringUtils.isEmpty(proxyHost) && proxyPort!= null) {
             return new HttpApiServiceImpl(eventApi, changeEventApi, proxyHost, proxyPort, doRetries);
         }
-        return new HttpApiServiceImpl(eventApi, changeEventApi, false);
+        return new HttpApiServiceImpl(eventApi, changeEventApi, doRetries);
     }
 
 }
